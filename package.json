@@ -1,16 +1,13 @@
 {
-  "name": "fortune-agco",
-  "description": "Web framework for prototyping hypermedia APIs.",
+  "name": "harvest",
+  "description": "Library supporting the creation of fully compliant JSON-API REST APIs",
   "version": "0.2.11",
   "license": "MIT",
-  "author": {
-    "name": "Dali Zheng",
-    "email": "dali@series.ac"
-  },
-  "homepage": "http://fortunejs.com",
+  "author": "Kristof Sajdak Kristof.Sajdak@agcocorp.com",
+  "homepage": "https://github.com/agco-adm/harvest",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agco-adm/fortune"
+    "url": "https://github.com/agco-adm/harvest.git"
   },
   "scripts": {
     "test": "node test/runner mongodb://127.0.0.1:27017/testDB"
