@@ -3,3 +3,12 @@ data/
 *.log
 .idea
 *.iml
+bin/
+workspace/
+.*/
+.c9/
+.*
+coverage/
+test/coverage
+lib/coverage
+mongod
