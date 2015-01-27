@@ -68,7 +68,6 @@ module.exports = function(baseUrl,keys,ids) {
                     .expect('Content-Type', /json/)
                     .expect(201)
                     .end(function (error, response) {
-                        //console.log(error, response.text)
                         should.not.exist(error);
                         var body = JSON.parse(response.text);
                         body.cars[0].id.should.match(uuidRegexp);
@@ -88,7 +87,6 @@ module.exports = function(baseUrl,keys,ids) {
                     .expect('Content-Type', /json/)
                     .expect(201)
                     .end(function (error, response) {
-                        //console.log(error, response.text)
                         should.not.exist(error);
                         var body = JSON.parse(response.text);
                         body.cars[0].id.should.equal(payload.cars[0].id);
