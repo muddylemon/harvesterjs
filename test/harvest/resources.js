@@ -80,5 +80,25 @@ module.exports = function(baseUrl,keys,ids) {
                 });
             });
         });
+
+        describe('posting a resource that trigger before and after', function () {
+            it('allows the request to go through if the before and after functionss don\'t return', function (done) {
+                var body = {foobars:[{
+                    foo : 'qaz'
+                }]};
+
+                request(baseUrl)
+                    .post('/foobars')
+                    .send(body)
+                    .expect('Content-Type', /json/)
+                    .end(function (error, response) {
+                        var body = JSON.parse(response.text);
+                        should.not.exist(error);
+                        body.foobars[0].foo.should.equal('qaz');
+                        done()
+                });
+            });
+        });
+        
     });
 }

@@ -25,8 +25,7 @@ function createApp(options) {
         .resource('foobar', {
             foo: String
         })
-        .before(
-        function (req, res) {
+        .before(function (req, res) {
             var foobar = this;
 
             if (foobar.foo && foobar.foo === 'bar') {
@@ -44,12 +43,18 @@ function createApp(options) {
                     detail: 'Foo was baz'
                 });
             }
-            else {
-                return foobar;
+        })
+        .after(function (req, res) {
+            var foobar = this;
+            if (!foobar.foo) {
+                return new RSVP.Promise(function (resolve, reject) {
+                    reject(new JSONAPI_Error({
+                        status: 400,
+                        detail: 'Foo was bar'
+                    }));
+                });
             }
-        }
-    );
-
+        });
 
     harvestApp.router.get('/random-error', function (req, res, next) {
         next(new Error('this is an error'));
