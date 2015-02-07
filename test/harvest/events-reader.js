@@ -130,10 +130,11 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
 
                     that.eventsReader = new EventsReader();
 
-                    // sleep 1000 to prevent we are reprocessing oplgo entries from the previous test
+                    // sleep to prevent we are reprocessing oplgo entries from the previous test
                     // precision for an oplog ts is 1s
                     require('sleep').sleep(1);
                     var now = BSON.Timestamp(0, (new Date() / 1000));
+                    require('sleep').sleep(3);
 
                     console.log('creating checkpoint with ts ' + now.getHighBits());
                     return that.harvestApp.adapter.create('checkpoint', {ts: now}).then(function () {
@@ -146,7 +147,7 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
                 });
         });
 
-        afterEach(function () {
+        afterEach(function (done) {
             this.eventsReader.stop()
                 .then(function () {
                     done();
