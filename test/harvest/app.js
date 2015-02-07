@@ -1,6 +1,6 @@
 var harvest = require('../../lib/harvest');
 var JSONAPI_Error = harvest.JSONAPI_Error;
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 
 function createApp(options) {
 
@@ -31,7 +31,7 @@ function createApp(options) {
 
             if (foobar.foo && foobar.foo === 'bar') {
                 // promise
-                return new RSVP.Promise(function (resolve, reject) {
+                return new Promise(function (resolve, reject) {
                     reject(new JSONAPI_Error({
                         status: 400,
                         detail: 'Foo was bar'
@@ -60,7 +60,7 @@ function createApp(options) {
     });
 
 
-    return RSVP.all([
+    return Promise.all([
             harvestApp.onRouteCreated('pet'),
             harvestApp.onRouteCreated('person'),
             harvestApp.onRouteCreated('foobar')

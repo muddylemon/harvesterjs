@@ -1,9 +1,9 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 var inflect = require('i')();
 var should = require('should');
 var _ = require('lodash');
 var request = require('supertest');
-var Promise = RSVP.Promise;
+var Promise = Promise;
 var BSON = require('mongodb').BSONPure;
 
 //require('longjohn');
@@ -17,7 +17,7 @@ var chai = require('chai');
 
 var chaiHttp = require('chai-http');
 chai.use(chaiHttp);
-chai.request.addPromises(RSVP.Promise);
+chai.request.addPromises(Promise);
 
 var $http = require('http-as-promised');
 
@@ -119,7 +119,7 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
             var that = this;
             that.timeout(100000);
 
-            createReportResponseDfd = RSVP.defer();
+            createReportResponseDfd = Promise.defer();
             createReportPromise = createReportResponseDfd.promise;
 
             console.log('drop database');

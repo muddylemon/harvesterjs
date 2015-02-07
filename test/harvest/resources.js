@@ -1,9 +1,9 @@
 var inflect= require('i')();
 var should = require('should');
 var _ = require('lodash');
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 var request = require('supertest');
-var Promise = RSVP.Promise;
+var Promise = Promise;
 var fixtures = require('./fixtures.json');
 
 module.exports = function(baseUrl,keys,ids) {
@@ -35,7 +35,7 @@ module.exports = function(baseUrl,keys,ids) {
                 var key = keys[collection];
 
                 it('in collection "' + key + '"', function (done) {
-                    RSVP.all(ids[key].map(function (id) {
+                    Promise.all(ids[key].map(function (id) {
                         return new Promise(function (resolve) {
                             request(baseUrl)
                                 .get('/' + key + '/' + id)
@@ -62,7 +62,7 @@ module.exports = function(baseUrl,keys,ids) {
                 var body = {people:[]};
                 body.people.push(_.cloneDeep(fixtures["person"][0]));
                 body.people[0].id=ids["people"][0];
-                RSVP.all([ids["people"][0]].map(function (id) {
+                Promise.all([ids["people"][0]].map(function (id) {
                     return new Promise(function (resolve) {
                         request(baseUrl)
                             .post('/people/')

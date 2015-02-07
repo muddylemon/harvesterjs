@@ -3,6 +3,8 @@ var Mocha = require('mocha'),
     fs = require('fs'),
     location = path.normalize(__dirname);
 
+require('longjohn');
+
 var mocha = new Mocha()
     .reporter('spec')
     .ui('bdd');

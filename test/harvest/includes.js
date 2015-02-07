@@ -1,8 +1,8 @@
 var should = require('should');
 var _ = require('lodash');
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 var request = require('supertest');
-var Promise = RSVP.Promise;
+var Promise = Promise;
 
 module.exports = function(baseUrl,keys,ids) {
 
@@ -24,7 +24,7 @@ module.exports = function(baseUrl,keys,ids) {
                         });
                 });
             }
-            RSVP.all([
+            Promise.all([
                 link('/people/' + ids.people[0], '/people/0/soulmate', ids.people[1]),
                 //TODO: harvest should take care about this on its own
                 link('/people/' + ids.people[1], '/people/0/soulmate', ids.people[0]),

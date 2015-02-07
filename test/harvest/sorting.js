@@ -1,9 +1,9 @@
 var inflect= require('i')();
 var should = require('should');
 var _ = require('lodash');
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 var request = require('supertest');
-var Promise = RSVP.Promise;
+var Promise = Promise;
 
 module.exports = function(baseUrl,keys,ids) {
 

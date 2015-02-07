@@ -1,5 +1,5 @@
 var harvest = require('../lib/harvest')
-  , RSVP = harvest.RSVP
+  , Promise = harvest.Promise
   , crypto = require('crypto');
 
 var pbkdf2 = {
@@ -50,14 +50,14 @@ var app = harvest({
     }
 
     // update a user
-    return new RSVP.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       checkUser(id, request).then(function(resource) {
         if(!password) return user;
 
         user = hashPassword(user, password);
 
         // clear tokens after password change
-        RSVP.all((resource.links.tokens || []).map(function(id) {
+        Promise.all((resource.links.tokens || []).map(function(id) {
           return app.adapter.delete('token', id);
         })).then(function() {
           resolve(user);
@@ -81,7 +81,7 @@ var app = harvest({
     var user = this;
     delete user.password;
     delete user.salt;
-    return new RSVP.Promise(function(resolve) {
+    return new Promise(function(resolve) {
       checkUser(user.id, request).then(function() {
         resolve(user);
       }, function() {
@@ -161,7 +161,7 @@ function authentication(req, res, next) {
  */
 function checkOwner(request) {
   var resource = this;
-  return new RSVP.Promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     checkUser(resource.links.owner, request).then(function() {
       resolve(resource);
     }, reject);
@@ -172,7 +172,7 @@ function checkOwner(request) {
  * Check if a user is authorized.
  */
 function checkUser(id, request) {
-  return new RSVP.Promise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var user, authorization = request.get('Authorization');
     if(!authorization) return reject();
 

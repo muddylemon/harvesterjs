@@ -1,10 +1,10 @@
 var inflect = require('i')();
 var should = require('should');
 var _ = require('lodash');
-var RSVP = require('rsvp');
+var Promise = require('bluebird')
 var request = require('supertest');
 
-var Promise = RSVP.Promise;
+var Promise = Promise;
 var fixtures = require('./fixtures.json');
 
 var baseUrl = 'http://localhost:' + 8000;
@@ -49,7 +49,7 @@ describe('using mongodb adapter', function () {
                             var db = collectionParts[0];
 
                             if (name && (name !== "system") && db && (db === expectedDbName)) {
-                                return new RSVP.Promise(function (resolve) {
+                                return new Promise(function (resolve) {
                                     fortuneApp.adapter.mongoose.connections[1].db.collection(name, function (err, collection) {
                                         collection.remove({}, null, function () {
                                             console.log("Wiped collection", name);
@@ -64,7 +64,7 @@ describe('using mongodb adapter', function () {
                 });
             }).then(function (wipeFns) {
                 console.log("Wiping collections:");
-                return RSVP.all(wipeFns);
+                return Promise.all(wipeFns);
             })
 
 
@@ -98,7 +98,7 @@ describe('using mongodb adapter', function () {
                     }));
                 });
 
-                return RSVP.all(createResources).then(function () {
+                return Promise.all(createResources).then(function () {
                     done();
                 });
             })
@@ -108,22 +108,23 @@ describe('using mongodb adapter', function () {
     });
 
 
-    require("./resources")(baseUrl,keys,ids);
-    require("./associations")(baseUrl,keys,ids);
-    require("./filters")(baseUrl,keys,ids);
-    require("./paging")(baseUrl,keys,ids);
-    require("./sorting")(baseUrl,keys,ids);
-    require("./limits")(baseUrl,keys,ids);
-    require("./includes")(baseUrl,keys,ids);
-    require("./jsonapi_error")(baseUrl,keys,ids);
+    require("./resources")(baseUrl, keys, ids);
+    require("./associations")(baseUrl, keys, ids);
+    require("./filters")(baseUrl, keys, ids);
+    require("./paging")(baseUrl, keys, ids);
+    require("./sorting")(baseUrl, keys, ids);
+    require("./limits")(baseUrl, keys, ids);
+    require("./includes")(baseUrl, keys, ids);
+    require("./jsonapi_error")(baseUrl, keys, ids);
 
 
     after(function (done) {
         var that = this;
-        _.each(fixtures, function (resources, collection) {
-            var key = keys[collection];
+        Promise
+            .all(_.map(fixtures, function (resources, collection) {
+                var key = keys[collection];
 
-            RSVP.all(ids[key].map(function (id) {
+                var promises = ids[key].map(function (id) {
                     return new Promise(function (resolve) {
                         request(baseUrl)
                             .del('/' + key + '/' + id)
@@ -133,16 +134,13 @@ describe('using mongodb adapter', function () {
                                 resolve();
                             });
                     });
-                })).then(function () {
-                    return that.app.then(function (fortuneApp) {
-                        fortuneApp.router.close();
-                        that.app = null;
-                    });
-                })
-                .finally(function () {
-                    done();
                 });
-        });
+                return Promise.all(promises)
+
+            }))
+            .finally(function () {
+                done();
+            });
     });
 
 });
