@@ -6,8 +6,6 @@ var request = require('supertest');
 var Promise = Promise;
 var BSON = require('mongodb').BSONPure;
 
-//require('longjohn');
-
 var baseUrl = 'http://localhost:' + 8001;
 var reportAPI_baseUri = 'http://localhost:9988';
 
