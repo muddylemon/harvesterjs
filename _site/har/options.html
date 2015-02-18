@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+
+        <title>harvester : options</title>
+        <meta name="description" content="Construct [JSON-API](http://jsonapi.org/) compliant REST APIs with Nodejs and Mongodb">
+
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class=row-fluid>
+                <div id=header class=span12>
+                    <h4><a class=brand href="/">harvester</a>
+    <small>Construct [JSON-API](http://jsonapi.org/) compliant REST APIs with Nodejs and Mongodb</small>
+</h4>
+
+
+                </div>
+            </div>
+
+            <div class=row-fluid>
+                
+                
+                    <div id=navigation class=span2>
+                        <ul class="nav nav-list">
+    <li><a href="/">Home</a></li>
+    
+        
+        
+
+        
+            
+                <li class=nav-header>Setup</li>
+            
+            <li data-order=""><a href="/doc/install-setup.html">Install & Setup</a></li>
+        
+    
+        
+        
+
+        
+            
+                <li class=nav-header>Harvester</li>
+            
+            <li data-order="15"><a href="/har/senderror.html">sendError</a></li>
+        
+            
+            <li data-order=""><a href="/har/jsonapierror.html">JSONAPI_Error</a></li>
+        
+            
+            <li data-order=""><a href="/har/onchange.html">onChange</a></li>
+        
+            
+            <li data-order=""><a href="/har/adapter.html">adapter</a></li>
+        
+            
+            <li data-order=""><a href="/har/router.html">router</a></li>
+        
+            
+            <li data-order=""><a href="/har/listen.html">listen</a></li>
+        
+            
+            <li data-order=""><a href="/har/use.html">use</a></li>
+        
+            
+            <li data-order=""><a href="/har/transform.html">transform</a></li>
+        
+            
+            <li data-order="4"><a href="/har/after.html">after</a></li>
+        
+            
+            <li data-order="3"><a href="/har/before.html">before</a></li>
+        
+            
+            <li data-order="2"><a href="/har/options.html">options</a></li>
+        
+            
+            <li data-order="1"><a href="/har/resource.html">resource</a></li>
+        
+    
+        
+        
+
+        
+            
+                <li class=nav-header>Adapter</li>
+            
+            <li data-order="6"><a href="/adp/model.html">model</a></li>
+        
+            
+            <li data-order="1"><a href="/adp/create.html">create</a></li>
+        
+            
+            <li data-order="7"><a href="/adp/awaitconnection.html">awaitConnection</a></li>
+        
+            
+            <li data-order="4"><a href="/adp/findmany.html">findMany</a></li>
+        
+            
+            <li data-order="3"><a href="/adp/find.html">find</a></li>
+        
+            
+            <li data-order="5"><a href="/adp/delete.html">delete</a></li>
+        
+            
+            <li data-order="2"><a href="/adp/update.html">update</a></li>
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+        
+        
+
+        
+    
+<!-- List additional links. It is recommended to add a divider
+    e.g. <li class=divider></li> first to break up the content. -->
+</ul>
+
+                    </div>
+
+                    <div id=content class=span10>
+                        <div class=page-header>
+    <h2>options
+        
+    </h2>
+</div>
+
+<p>An object that is passed in to the Harvester constructor, which contains all of the configuration options.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Harvester.options *property
+</code></pre></div>
+<h4 id="database-setup">Database Setup</h4>
+
+<ul>
+<li>db: the name of the database to use. Default: harvester.</li>
+<li>host: the address of the database machine. Default: localhost.</li>
+<li>port: the port of the database machine. Do not set this unless you do not plan on using the default port for the database.</li>
+<li>username: username for logging into the database. This may be optional for MongoDB.</li>
+<li>password: password for logging into the database. This may be optional for MongoDB.</li>
+<li>flags: an optional hash containing additional options to pass to the adapter.</li>
+<li>connectionString: an optional string that overrides all database connection options, this is specific to the adapter. Default: &#39;&#39;.</li>
+</ul>
+
+<h4 id="harvester-setup">Harvester Setup</h4>
+
+<ul>
+<li>baseUrl: optional prefix for URLs, i.e. <a href="http://api.example.com">http://api.example.com</a>.</li>
+<li>namespace: optional namespace for your API, i.e. api/v1.</li>
+<li>inflect: Boolean value that determines whether strings should automatically be pluralized and - singularized. Default: true.</li>
+<li>suffix: optional suffix to every route, for example, /posts.json, /posts/1.json, /posts/1/comments.json.</li>
+<li>cors: boolean value indicating whether or not to enable Cross Origin Resource Sharing (CORS), or an object that contains additional configuration keys: headers (Array), methods (Array), origins (Array), and credentials (Boolean). Default: true.</li>
+<li>environment: if this is set to &quot;production&quot;, responses will have whitespace stripped. Default: process.env.NODE_ENV.</li>
+</ul>
+
+
+                    </div>
+                
+            </div>
+
+            
+
+            <div class=row-fluid>
+                <div id=footer class=span12>
+                    Documentation for <a href="https://github.com/agco/harvester">harvester</a>
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function orderNav() {
+                var list,
+                    section,
+                    header,
+                    sections = [],
+                    lists = {},
+                    headers = {};
+
+                var navUl = document.querySelectorAll('#navigation ul')[0],
+                    navLis = document.querySelectorAll('#navigation ul li');
+
+                if (!navUl) return;
+
+                for (var i = 0; i < navLis.length; i++) {
+                    var order, li = navLis[i];
+
+                    if (li.classList.contains('nav-header')) {
+                        section = li.textContent || li.innerText;
+                        sections.push(section);
+                        headers[section] = li;
+                        continue;
+                    }
+
+                    if (!lists[section]) {
+                        lists[section] = [];
+                    }
+
+                    order = parseFloat(li.getAttribute('data-order'))
+                    lists[section].push([order, li]);
+                }
+
+                for (var i = 0; i < sections.length; i++) {
+                    section = sections[i];
+                    list = lists[section].sort(function(a, b) {
+                        return a[0] - b[0];
+                    });
+
+                    if (header = headers[section]) {
+                        navUl.appendChild(header);
+                    }
+                    for (var j = 0; j < list.length; j++) {
+                        navUl.appendChild(list[j][1]);
+                    }
+                }
+            }
+
+            if (document.querySelectorAll) orderNav();
+        </script>
+        
+    </body>
+</html>
