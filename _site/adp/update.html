@@ -149,14 +149,14 @@
 <p>Find &amp; update a resource by ID.</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">adapter.update(model, id, update) → Promise
 </code></pre></div>
-<p>The resulting promise returns the updated resource.</p>
+<p>The resulting promise returns the updated resource. Note that this uses mongoose&#39;s findByIdAndUpdate method.</p>
 
 <h4 id="parameters">Parameters</h4>
 
 <ul>
 <li>model (String | Object): if the model is a string, it looks up the model based on it&#39;s name</li>
 <li>id (String): the resource ID</li>
-<li>update (Object): a partial resource in JSON API format</li>
+<li>update (Object): a partial resource</li>
 </ul>
 
 
