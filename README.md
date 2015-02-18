@@ -1,8 +1,5 @@
 
-Docs hosted at http://agco.github.io/harvester/
-
-
-
+Docs hosted at http://agco.github.io/harvest/
 
 
 ---
