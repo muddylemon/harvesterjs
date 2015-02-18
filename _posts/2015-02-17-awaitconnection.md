@@ -7,6 +7,7 @@ order: 7
 ---
 
 Sometimes we need to wait for the database connection first. This is a stub method that should return a promise, and it should only be implemented if the need arises.
+
 ```javascript
 adapter.awaitConnection() → Promise
 ```
