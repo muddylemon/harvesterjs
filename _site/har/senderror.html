@@ -9,15 +9,15 @@
         <meta name="description" content="Construct [JSON-API](http://jsonapi.org/) compliant REST APIs with Nodejs and Mongodb">
 
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="/harvest/css/syntax.css">
-        <link rel="stylesheet" href="/harvest/css/main.css">
+        <link rel="stylesheet" href="/css/syntax.css">
+        <link rel="stylesheet" href="/css/main.css">
     </head>
     <body>
 
         <div class="container">
             <div class=row-fluid>
                 <div id=header class=span12>
-                    <h4><a class=brand href="/harvest/">harvester</a>
+                    <h4><a class=brand href="/">harvester</a>
     <small>Construct [JSON-API](http://jsonapi.org/) compliant REST APIs with Nodejs and Mongodb</small>
 </h4>
 
@@ -30,7 +30,7 @@
                 
                     <div id=navigation class=span2>
                         <ul class="nav nav-list">
-    <li><a href="/harvest/">Home</a></li>
+    <li><a href="/">Home</a></li>
     
         
         
@@ -39,7 +39,7 @@
             
                 <li class=nav-header>Setup</li>
             
-            <li data-order=""><a href="/harvest/doc/install-setup.html">Install & Setup</a></li>
+            <li data-order=""><a href="/doc/install-setup.html">Install & Setup</a></li>
         
     
         
@@ -49,40 +49,40 @@
             
                 <li class=nav-header>Harvester</li>
             
-            <li data-order="15"><a href="/harvest/har/senderror.html">sendError</a></li>
+            <li data-order="15"><a href="/har/senderror.html">sendError</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/jsonapierror.html">JSONAPI_Error</a></li>
+            <li data-order=""><a href="/har/jsonapierror.html">JSONAPI_Error</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/onchange.html">onChange</a></li>
+            <li data-order=""><a href="/har/onchange.html">onChange</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/adapter.html">adapter</a></li>
+            <li data-order=""><a href="/har/adapter.html">adapter</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/router.html">router</a></li>
+            <li data-order=""><a href="/har/router.html">router</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/listen.html">listen</a></li>
+            <li data-order=""><a href="/har/listen.html">listen</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/use.html">use</a></li>
+            <li data-order=""><a href="/har/use.html">use</a></li>
         
             
-            <li data-order=""><a href="/harvest/har/transform.html">transform</a></li>
+            <li data-order=""><a href="/har/transform.html">transform</a></li>
         
             
-            <li data-order="4"><a href="/harvest/har/after.html">after</a></li>
+            <li data-order="4"><a href="/har/after.html">after</a></li>
         
             
-            <li data-order="3"><a href="/harvest/har/before.html">before</a></li>
+            <li data-order="3"><a href="/har/before.html">before</a></li>
         
             
-            <li data-order="2"><a href="/harvest/har/options.html">options</a></li>
+            <li data-order="2"><a href="/har/options.html">options</a></li>
         
             
-            <li data-order="1"><a href="/harvest/har/resource.html">resource</a></li>
+            <li data-order="1"><a href="/har/resource.html">resource</a></li>
         
     
         
@@ -92,25 +92,25 @@
             
                 <li class=nav-header>Adapter</li>
             
-            <li data-order="6"><a href="/harvest/adp/model.html">model</a></li>
+            <li data-order="6"><a href="/adp/model.html">model</a></li>
         
             
-            <li data-order="1"><a href="/harvest/adp/create.html">create</a></li>
+            <li data-order="1"><a href="/adp/create.html">create</a></li>
         
             
-            <li data-order="7"><a href="/harvest/adp/awaitconnection.html">awaitConnection</a></li>
+            <li data-order="7"><a href="/adp/awaitconnection.html">awaitConnection</a></li>
         
             
-            <li data-order="4"><a href="/harvest/adp/findmany.html">findMany</a></li>
+            <li data-order="4"><a href="/adp/findmany.html">findMany</a></li>
         
             
-            <li data-order="3"><a href="/harvest/adp/find.html">find</a></li>
+            <li data-order="3"><a href="/adp/find.html">find</a></li>
         
             
-            <li data-order="5"><a href="/harvest/adp/delete.html">delete</a></li>
+            <li data-order="5"><a href="/adp/delete.html">delete</a></li>
         
             
-            <li data-order="2"><a href="/harvest/adp/update.html">update</a></li>
+            <li data-order="2"><a href="/adp/update.html">update</a></li>
         
     
         
@@ -146,6 +146,16 @@
     </h2>
 </div>
 
+<p>Sends a JSONAPI error on the supplied route, consuming either a JSONAPI error, or a regular error object.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">harvester.sendError (req, res, error)
+</code></pre></div>
+<h4 id="parameters">Parameters</h4>
+
+<ul>
+<li>req (Object): the express request object</li>
+<li>res (Object): the express response object</li>
+<li>error (Object): either a JSONAPI error or a regular error object.</li>
+</ul>
 
 
                     </div>
