@@ -1,4 +1,4 @@
-# Site title and subtitle. This is used in _includes/header.html
+# Site title and subtitle. This is used in _includes/header.html 
 title: 'harvester'
 subtitle: 'Construct [JSON-API](http://jsonapi.org/) compliant REST APIs with Nodejs and Mongodb'
 
