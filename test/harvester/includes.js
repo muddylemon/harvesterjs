@@ -25,11 +25,11 @@ module.exports = function(baseUrl,keys,ids) {
                 });
             }
             RSVP.all([
-                link('/people/' + ids.people[0], '/people/0/soulmate', ids.people[1]),
+                link('/people/' + ids.people[0], '/people/0/links/soulmate', ids.people[1]),
                 //TODO: harvester should take care about this on its own
-                link('/people/' + ids.people[1], '/people/0/soulmate', ids.people[0]),
+                link('/people/' + ids.people[1], '/people/0/links/soulmate', ids.people[0]),
 
-                link('/people/' + ids.people[0], '/people/0/lovers', [ids.people[1]])
+                link('/people/' + ids.people[0], '/people/0/links/lovers', [ids.people[1]])
             ]).then(function(){
                 done();
             });
