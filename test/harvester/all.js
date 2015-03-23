@@ -30,7 +30,7 @@ describe('using mongodb adapter', function () {
 
     before(function (done) {
 
-        this.app = require('./app')(options)
+        this.app = require('./app')(options);
         this.app.listen(8000);
         var expectedDbName = this.app.options.db;
         var harvesterApp = this.app;
@@ -38,8 +38,8 @@ describe('using mongodb adapter', function () {
             harvesterApp.adapter.awaitConnection().then(function() {
                 harvesterApp.adapter.db.db.dropDatabase();
                 return resolve();
-            })
-         })
+            });
+        })
         .then(function () {
             console.log("--------------------");
             console.log("Running tests:");
