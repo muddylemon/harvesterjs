@@ -21,3 +21,12 @@ should be considered, as people who are new to the stack might have a different
 perception of what is evident.
 
 ## How
+
+Our documents are based on the popular [Jekyll docs template](http://bruth.github.io/jekyll-docs-template/) 
+and you can find detailed descriptions about the tool on its github doc pages.
+
+### Recipe: starting a new GitHub pages site for an existing project
+
+#### What you will need
+
+### How to do it
