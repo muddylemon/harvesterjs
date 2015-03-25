@@ -58,7 +58,8 @@ var app = harvester({
 
         // clear tokens after password change
         RSVP.all((resource.links.tokens || []).map(function(id) {
-          return app.adapter.delete('token', id);
+            var token = app.adapter._models['token'];
+            return token.findByIdAndRemove(id).exec();
         })).then(function() {
           resolve(user);
         }, reject);
@@ -133,7 +134,9 @@ function authentication(req, res, next) {
   } catch(error) {
     res.send(400);
   }
-  app.adapter.find('user', {name: name}).then(function(user) {
+
+  var user = app.adapter._models['user'];
+  return user.findOne({name: name}).exec().then(function(user) {
     var derivedKey = crypto.pbkdf2Sync(
       password, user.salt.buffer, pbkdf2.iterations, pbkdf2.keylen
     );
@@ -144,7 +147,8 @@ function authentication(req, res, next) {
         owner: user.id
       }
     };
-    return app.adapter.create('token', token);
+    var Token = app.adapter._models['token'];
+    return Token.create(token);
   }, function() {
     res.send(403);
   })
@@ -176,9 +180,11 @@ function checkUser(id, request) {
     var user, authorization = request.get('Authorization');
     if(!authorization) return reject();
 
-    app.adapter.find('user', id).then(function(resource) {
+    var user = app.adapter._models['user'];
+    return user.findById(id).exec().then(function(resource) {
       user = resource;
-      return app.adapter.findMany('token', resource.links.tokens);
+      var Token = app.adapter._models.token;
+      return Token.find({_id: {$in: resource.links.tokens}}).exec();
     }, reject)
 
     .then(function(tokens) {

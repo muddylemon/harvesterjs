@@ -58,7 +58,7 @@ describe('EventSource implementation for resource changes', function () {
               }});
             }
             if (dataReceived) return;
-            expect(_.omit(data, 'id')).to.deep.equal({title : 'test title 2'});
+            expect(data.title).to.equal('test title 2');
             dataReceived = true;
             done();
           });
@@ -82,7 +82,7 @@ describe('EventSource implementation for resource changes', function () {
             var data = JSON.parse(data.data);
             //ignore ticker data
             if(_.isNumber(data)) return;
-            expect(_.omit(data, 'id')).to.deep.equal({title : 'test title 3'});
+            expect(data.title).to.equal('test title 3');
             dataReceived = true;
             done();
           });

@@ -75,7 +75,8 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
             var profanity = require('profanity-util');
 
             function reportAbusiveLanguage(id) {
-                return that.harvesterApp.adapter.find('comment', id.toString())
+                var comment = that.harvesterApp.adapter._models['comment'];
+                return comment.findById(id.toString()).exec()
                     .then(function (comment) {
                         var check = profanity.check(comment);
                         if (!!check && check.length > 0) {
@@ -126,8 +127,9 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
                     require('sleep').sleep(1);
                     var now = BSON.Timestamp(0, (new Date() / 1000));
 
+                    var checkpoint = that.harvesterApp.adapter._models['checkpoint'];
                     console.log('creating checkpoint with ts ' + now.getHighBits());
-                    return that.harvesterApp.adapter.create('checkpoint', {ts: now}).then(function () {
+                    return checkpoint.create({ts: now}).then(function () {
                         return done();
                     });
 
