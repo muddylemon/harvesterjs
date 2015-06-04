@@ -2,10 +2,13 @@ var inflect = require('i')();
 var $http = require('http-as-promised');
 var should = require('should');
 var _ = require('lodash');
+
 var RSVP = require('rsvp');
+
 var request = require('supertest');
 var Promise = RSVP.Promise;
 var harvester = require('../../lib/harvester');
+
 
 
 describe.only('remote link', function () {
@@ -31,11 +34,13 @@ describe.only('remote link', function () {
                 oplogConnectionString : (process.env.OPLOG_MONGODB_URL || process.argv[3] || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
             };
 
+
+
             that.harvesterApp1 =
                 harvester(options)
                     .resource('post', {
                         title: String,
-                        author: {ref: 'people', baseUri: 'http://localhost:8004'}
+                        author: {ref: 'person', baseUri: 'http://localhost:8004'}
 
                     })
                     .listen(8003);
@@ -47,6 +52,10 @@ describe.only('remote link', function () {
                         lastName: String
                     })
                     .listen(8004);
+
+            // todo investigate why dropDatabase is not working
+            that.harvesterApp1.adapter.db.db.dropDatabase();
+            that.harvesterApp2.adapter.db.db.dropDatabase();
 
 
             // todo come up with a consistent pattern for seeding
@@ -81,12 +90,11 @@ describe.only('remote link', function () {
             it('should respond with a compound document with posts and people included', function (done) {
                 var that = this;
                 // todo come up with a consistent pattern for assertions
-                request(baseUrl)
-                    .get(app1BaseUrl + '/posts?include=author')
-                    .expect('Content-Type', 'application/vnd.api+json; charset=utf-8')
+                request(app1BaseUrl)
+                    .get('/posts?include=author')
                     .expect(200)
                     .end(function (error, response) {
-                        var body = JSON.parse(response.text);
+                        var body = response.body;
 
                         body.posts.should.be.an.Array;
 
