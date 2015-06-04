@@ -11,7 +11,7 @@ var harvester = require('../../lib/harvester');
 
 
 
-describe.only('remote link', function () {
+describe('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
