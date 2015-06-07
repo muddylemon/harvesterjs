@@ -2,16 +2,11 @@ var inflect = require('i')();
 var $http = require('http-as-promised');
 var should = require('should');
 var _ = require('lodash');
-
-var RSVP = require('rsvp');
-
+var Promise = require("bluebird");
 var request = require('supertest');
-var Promise = RSVP.Promise;
 var harvester = require('../../lib/harvester');
 
-
-
-describe('remote link', function () {
+describe.only('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
@@ -34,8 +29,6 @@ describe('remote link', function () {
                 oplogConnectionString : (process.env.OPLOG_MONGODB_URL || process.argv[3] || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
             };
 
-
-
             that.harvesterApp1 =
                 harvester(options)
                     .resource('post', {
@@ -49,41 +42,72 @@ describe('remote link', function () {
                 harvester(options)
                     .resource('person', {
                         firstName: String,
-                        lastName: String
+                        lastName: String,
+                        country: 'country'
+                    })
+                    .resource('country', {
+                        code: String
                     })
                     .listen(8004);
 
-            // todo investigate why dropDatabase is not working
-            that.harvesterApp1.adapter.db.db.dropDatabase();
-            that.harvesterApp2.adapter.db.db.dropDatabase();
-
-
-            // todo come up with a consistent pattern for seeding
-            // as far as I can see we are mixing supertest, chai http and http-as-promised
-            return $http({
-                uri: app2BaseUrl + '/people', method: 'POST', json: {
-                    people: [
-                        {
-                            firstName: 'Tony',
-                            lastName: 'Maley'
-                        }
-                    ]
-                }
-            }).spread(function (res, body) {
-                that.authorId = body.people[0].id;
-                return $http({
-                    uri: app1BaseUrl + '/posts', method: 'POST', json: {
-                        posts: [
-                            {
-                                title: 'Nodejs rules !',
-                                links: {
-                                    author: that.authorId
-                                }
-                            }
-                        ]
-                    }
+            // todo move into utility class or upgrade to latest version of mongoose which returns a promise
+            function removeCollection(model) {
+                return new Promise(function (resolve, reject) {
+                    model.collection.remove(function (err, result) {
+                        if (err) reject(err);
+                        resolve(result);
+                    });
                 });
-            });
+            }
+
+            return removeCollection(that.harvesterApp1.adapter.model('post'))
+                .then(function () {
+                    return removeCollection(that.harvesterApp2.adapter.model('person'))
+                })
+                .then(function () {
+                    // todo come up with a consistent pattern for seeding
+                    // as far as I can see we are mixing supertest, chai http and http-as-promised
+                    return $http({
+                        uri: app2BaseUrl + '/countries', method: 'POST', json: {
+                            countries: [
+                                {
+                                    code: 'US'
+                                }
+                            ]
+                        }
+                    })
+                })
+                .spread(function (res, body) {
+                    that.countryId = body.countries[0].id;
+                    return $http({
+                        uri: app2BaseUrl + '/people', method: 'POST', json: {
+                            people: [
+                                {
+                                    firstName: 'Tony',
+                                    lastName: 'Maley',
+                                    links: {
+                                        country: that.countryId
+                                    }
+                                }
+                            ]
+                        }
+                    })
+                })
+                .spread(function (res, body) {
+                    that.authorId = body.people[0].id;
+                    return $http({
+                        uri: app1BaseUrl + '/posts', method: 'POST', json: {
+                            posts: [
+                                {
+                                    title: 'Nodejs rules !',
+                                    links: {
+                                        author: that.authorId
+                                    }
+                                }
+                            ]
+                        }
+                    });
+                });
         });
 
         describe('fetch posts and include author', function () {
@@ -91,7 +115,7 @@ describe('remote link', function () {
                 var that = this;
                 // todo come up with a consistent pattern for assertions
                 request(app1BaseUrl)
-                    .get('/posts?include=author')
+                    .get('/posts?include=author,author.country')
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
@@ -99,9 +123,12 @@ describe('remote link', function () {
                         body.posts.should.be.an.Array;
 
                         var linkedPeople = (body.linked.people);
-                        linkedPeople.should.be.an.Array;
                         (linkedPeople.length).should.be.exactly(1);
                         linkedPeople[0].id.should.be.exactly(that.authorId);
+
+                        var linkedCountry = (body.linked.people);
+                        (linkedCountry.length).should.be.exactly(1);
+                        linkedCountry[0].id.should.be.exactly(that.countryId);
 
                         done();
                     });

@@ -38,11 +38,11 @@
     "underscore.string": "^2.4.0"
   },
   "devDependencies": {
+    "bluebird": "^2.9.27",
     "chai": "^1.10.0",
     "chai-http": "^1.0.0",
-    "event-source-stream": "git+https://github.com/agco/event-source-stream.git",
-    "mocha": "~1.20.1",
     "coveralls": "^2.11.2",
+    "event-source-stream": "git+https://github.com/agco/event-source-stream.git",
     "http-as-promised": "^0.1.0",
     "istanbul": "^0.3.7",
     "mocha": "~1.20.1",
