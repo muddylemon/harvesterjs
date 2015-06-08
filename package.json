@@ -33,6 +33,7 @@
     "mongodb": "^1.4.26",
     "mongojs": "^0.18.0",
     "mongoose": "3.8.25",
+    "node-uuid": "^1.4.3",
     "rsvp": "~3.0.9",
     "tiny-sse": "0.0.0",
     "underscore.string": "^2.4.0"
@@ -45,7 +46,6 @@
     "coveralls": "^2.11.2",
     "http-as-promised": "^0.1.0",
     "istanbul": "^0.3.7",
-    "mocha": "~1.20.1",
     "mocha-lcov-reporter": "0.0.2",
     "nock": "^0.56.0",
     "profanity-util": "0.0.2",
