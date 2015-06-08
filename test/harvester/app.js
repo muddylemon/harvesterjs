@@ -9,10 +9,9 @@ function createApp(options) {
         .resource('person', {
             name: String,
             appearances: Number,
-            pets: ['pet'],
-            soulmate: {ref: 'person', inverse: 'soulmate'},
+            soulmate: {ref: 'person'},
             lovers: [
-                {ref: 'person', inverse: 'lovers'}
+                {ref: 'person'}
             ]
         })
 
