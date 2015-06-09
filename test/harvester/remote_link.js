@@ -144,11 +144,7 @@ describe.only('remote link', function () {
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
-
-                        var linkedPeople = (body.linked.people);
-                        (linkedPeople.length).should.be.exactly(1);
-                        linkedPeople[0].id.should.be.exactly(that.authorId);
-
+                        _.pluck(body.linked.people, 'id').should.eql([that.authorId]);
                         done();
                     });
             });
@@ -163,15 +159,8 @@ describe.only('remote link', function () {
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
-
-                        var linkedPeople = (body.linked.people);
-                        (linkedPeople.length).should.be.exactly(1);
-                        linkedPeople[0].id.should.be.exactly(that.authorId);
-
-                        var linkedCountries = (body.linked.countries);
-                        (linkedCountries.length).should.be.exactly(1);
-                        linkedCountries[0].id.should.be.exactly(that.countryId);
-
+                        _.pluck(body.linked.people, 'id').should.eql([that.authorId]);
+                        _.pluck(body.linked.countries, 'id').should.eql([that.countryId]);
                         done();
                     });
             });
@@ -186,19 +175,9 @@ describe.only('remote link', function () {
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
-
-                        var linkedPeople = (body.linked.people);
-                        (linkedPeople.length).should.be.exactly(1);
-                        linkedPeople[0].id.should.be.exactly(that.authorId);
-
-                        var linkedCountries = (body.linked.countries);
-                        (linkedCountries.length).should.be.exactly(1);
-                        linkedCountries[0].id.should.be.exactly(that.countryId);
-
-                        var linkedComments = (body.linked.comments);
-                        (linkedComments.length).should.be.exactly(1);
-                        linkedComments[0].id.should.be.exactly(that.commentId);
-
+                        _.pluck(body.linked.people, 'id').should.eql([that.authorId]);
+                        _.pluck(body.linked.countries, 'id').should.eql([that.countryId]);
+                        _.pluck(body.linked.comments, 'id').should.eql([that.commentId]);
                         done();
                     });
             });
