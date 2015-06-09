@@ -71,66 +71,41 @@ describe.only('remote link', function () {
                     // todo come up with a consistent pattern for seeding
                     // as far as I can see we are mixing supertest, chai http and http-as-promised
                     return $http({
-                        uri: app2BaseUrl + '/countries', method: 'POST', json: {
-                            countries: [
-                                {
-                                    code: 'US'
-                                }
-                            ]
-                        }
+                        uri: app2BaseUrl + '/countries',
+                        method: 'POST',
+                        json: {countries: [{code: 'US'}]}
                     })
                 })
                 .spread(function (res, body) {
                     that.countryId = body.countries[0].id;
                     return $http({
-                        uri: app2BaseUrl + '/people', method: 'POST', json: {
-                            people: [
-                                {
-                                    firstName: 'Tony',
-                                    lastName: 'Maley',
-                                    links: {
-                                        country: that.countryId
-                                    }
-                                }
-                            ]
-                        }
+                        uri: app2BaseUrl + '/people',
+                        method: 'POST',
+                        json: {people: [{firstName: 'Tony', lastName: 'Maley', links: {country: that.countryId}}]}
                     })
                 })
                 .spread(function (res, body) {
                     that.authorId = body.people[0].id;
                     return $http({
-                        uri: app1BaseUrl + '/posts', method: 'POST', json: {
-                            posts: [
-                                {
-                                    title: 'Nodejs rules !',
-                                    links: {
-                                        author: that.authorId
-                                    }
-                                }
-                            ]
-                        }
+                        uri: app1BaseUrl + '/posts',
+                        method: 'POST',
+                        json: {posts: [{title: 'Nodejs rules !', links: {author: that.authorId}}]}
                     });
                 })
                 .spread(function (res, body) {
                     that.postId = body.posts[0].id;
                     return $http({
-                        uri: app1BaseUrl + '/comments', method: 'POST', json: {
-                            comments: [
-                                {
-                                    body: 'That\'s crazy talk, Ruby is the best !'
-                                }
-                            ]
-                        }
+                        uri: app1BaseUrl + '/comments',
+                        method: 'POST',
+                        json: {comments: [{body: 'That\'s crazy talk, Ruby is the best !'}]}
                     });
                 })
                 .spread(function (res, body) {
                     that.commentId = body.comments[0].id;
                     return $http({
-                        uri: app1BaseUrl + '/posts/' + that.postId, method: 'PATCH', json: [{
-                            op: 'replace',
-                            path: 'posts/0/links/comments',
-                            value: [that.commentId]
-                        }]
+                        uri: app1BaseUrl + '/posts/' + that.postId,
+                        method: 'PATCH',
+                        json: [{op: 'replace', path: 'posts/0/links/comments', value: [that.commentId]}]
                     });
                 });
         });
