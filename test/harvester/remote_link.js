@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var request = require('supertest');
 var harvester = require('../../lib/harvester');
 
-describe('remote link', function () {
+describe.only('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
@@ -26,15 +26,18 @@ describe('remote link', function () {
                 connectionString: process.env.MONGODB_URL || process.argv[2] || "mongodb://127.0.0.1:27017/testDB",
                 db: 'testDB',
                 inflect: true,
-                oplogConnectionString : (process.env.OPLOG_MONGODB_URL || process.argv[3] || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
+                oplogConnectionString: (process.env.OPLOG_MONGODB_URL || process.argv[3] || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
             };
 
             that.harvesterApp1 =
                 harvester(options)
                     .resource('post', {
                         title: String,
-                        author: {ref: 'person', baseUri: 'http://localhost:8004'}
-
+                        author: {ref: 'person', baseUri: 'http://localhost:8004'},
+                        comments: ['comment']
+                    })
+                    .resource('comment', {
+                        body: String
                     })
                     .listen(8003);
 
@@ -107,6 +110,28 @@ describe('remote link', function () {
                             ]
                         }
                     });
+                })
+                .spread(function (res, body) {
+                    that.postId = body.posts[0].id;
+                    return $http({
+                        uri: app1BaseUrl + '/comments', method: 'POST', json: {
+                            comments: [
+                                {
+                                    body: 'That\'s crazy talk, Ruby is the best !'
+                                }
+                            ]
+                        }
+                    });
+                })
+                .spread(function (res, body) {
+                    that.commentId = body.comments[0].id;
+                    return $http({
+                        uri: app1BaseUrl + '/posts/' + that.postId, method: 'PATCH', json: [{
+                            op: 'replace',
+                            path: 'posts/0/links/comments',
+                            value: [that.commentId]
+                        }]
+                    });
                 });
         });
 
@@ -120,8 +145,6 @@ describe('remote link', function () {
                     .end(function (error, response) {
                         var body = response.body;
 
-                        body.posts.should.be.an.Array;
-
                         var linkedPeople = (body.linked.people);
                         (linkedPeople.length).should.be.exactly(1);
                         linkedPeople[0].id.should.be.exactly(that.authorId);
@@ -131,17 +154,19 @@ describe('remote link', function () {
             });
         });
 
-        describe.skip('fetch posts, include author and author.country', function () {
-            it('should respond with a compound document with countries included', function (done) {
+        describe('fetch posts include author.country', function () {
+            it('should respond with a compound document with people and countries included', function (done) {
                 var that = this;
                 // todo come up with a consistent pattern for assertions
                 request(app1BaseUrl)
-                    .get('/posts?include=author,author.country')
+                    .get('/posts?include=author.country')
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
 
-                        body.posts.should.be.an.Array;
+                        var linkedPeople = (body.linked.people);
+                        (linkedPeople.length).should.be.exactly(1);
+                        linkedPeople[0].id.should.be.exactly(that.authorId);
 
                         var linkedCountries = (body.linked.countries);
                         (linkedCountries.length).should.be.exactly(1);
@@ -151,6 +176,34 @@ describe('remote link', function () {
                     });
             });
         });
+
+        describe('fetch posts include author.country and comments', function () {
+            it('should respond with a compound document with people, countries and comments included', function (done) {
+                var that = this;
+                // todo come up with a consistent pattern for assertions
+                request(app1BaseUrl)
+                    .get('/posts?include=comments,author.country')
+                    .expect(200)
+                    .end(function (error, response) {
+                        var body = response.body;
+
+                        var linkedPeople = (body.linked.people);
+                        (linkedPeople.length).should.be.exactly(1);
+                        linkedPeople[0].id.should.be.exactly(that.authorId);
+
+                        var linkedCountries = (body.linked.countries);
+                        (linkedCountries.length).should.be.exactly(1);
+                        linkedCountries[0].id.should.be.exactly(that.countryId);
+
+                        var linkedComments = (body.linked.comments);
+                        (linkedComments.length).should.be.exactly(1);
+                        linkedComments[0].id.should.be.exactly(that.commentId);
+
+                        done();
+                    });
+            });
+        });
+
     });
 
 
