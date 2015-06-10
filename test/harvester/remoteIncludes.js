@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var request = require('supertest');
 var harvester = require('../../lib/harvester');
 
-describe('remote link', function () {
+describe.only('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
@@ -34,7 +34,11 @@ describe('remote link', function () {
                     .resource('post', {
                         title: String,
                         author: {ref: 'person', baseUri: 'http://localhost:8004'},
-                        comments: ['comment']
+                        comments: ['comment'],
+                        topic: 'topic'
+                    })
+                    .resource('topic', {
+                        name: String
                     })
                     .resource('comment', {
                         body: String
@@ -146,7 +150,7 @@ describe('remote link', function () {
                 var that = this;
                 // todo come up with a consistent pattern for assertions
                 request(app1BaseUrl)
-                    .get('/posts?include=comments,author.country')
+                    .get('/posts?include=topic,comments,author,author.country')
                     .expect(200)
                     .end(function (error, response) {
                         var body = response.body;
