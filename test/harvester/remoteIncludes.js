@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var request = require('supertest');
 var harvester = require('../../lib/harvester');
 
-describe.only('remote link', function () {
+describe('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
@@ -145,7 +145,7 @@ describe.only('remote link', function () {
             });
         });
 
-        describe('fetch posts include author.country and comments', function () {
+        describe('fetch posts include topic, author, author.country and comments', function () {
             it('should respond with a compound document with people, countries and comments included', function (done) {
                 var that = this;
                 // todo come up with a consistent pattern for assertions
