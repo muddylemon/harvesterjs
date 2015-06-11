@@ -16,6 +16,13 @@ function createApp(options) {
             ]
         })
 
+        .resource('vehicle', {
+            name: String,
+            owners: [
+                {ref: 'person', inverse: 'owners'}
+            ]
+        })
+
         .resource('pet', {
             name: String,
             appearances: Number,
