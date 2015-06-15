@@ -47,6 +47,7 @@
     "http-as-promised": "^0.1.0",
     "istanbul": "^0.3.7",
     "mocha-lcov-reporter": "0.0.2",
+    "mocha":"2.2.x",
     "nock": "^0.56.0",
     "profanity-util": "0.0.2",
     "request-debug": "^0.1.1",
