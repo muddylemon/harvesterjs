@@ -4,6 +4,7 @@ var _ = require('lodash');
 var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
+var uuid = require('node-uuid');
 
 module.exports = function(baseUrl,keys,ids) {
 
@@ -143,5 +144,63 @@ module.exports = function(baseUrl,keys,ids) {
         });
       });
     });
+
+    describe('UUID association', function() {
+      it('shouldn\'t associate if the property value is a UUID', function (done) {
+        new Promise(function (resolve) {
+          var payload = {};
+
+          payload.vehicles = [
+            {
+              id : uuid.v4(),
+              name : uuid.v4(),
+              links: {
+                owners: uuid.v4()
+              }
+            }
+          ];
+
+          request(baseUrl)
+            .post('/vehicles')
+            .send(payload)
+            .expect('Content-Type', /json/)
+            .expect(201)
+            .end(function (error, response) {
+              should.not.exist(error);
+              var body = JSON.parse(response.text);
+              should.not.exist(body.vehicles[0].links.name);
+              done();
+            });
+        })
+      });
+
+      it('shouldn\'t associate if the property value is a an array of UUID', function (done) {
+        new Promise(function (resolve) {
+          var payload = {};
+
+          payload.vehicles = [
+            {
+              id : uuid.v4(),
+              name : [uuid.v4(), uuid.v4()],
+              links: {
+                owners: uuid.v4()
+              }
+            }
+          ];
+          
+          request(baseUrl)
+            .post('/vehicles')
+            .send(payload)
+            .expect('Content-Type', /json/)
+            .expect(201)
+            .end(function (error, response) {
+              should.not.exist(error);
+              var body = JSON.parse(response.text);
+              should.not.exist(body.vehicles[0].links.name);
+              done();
+            });
+        })
+      });
+    })
   });
 };
