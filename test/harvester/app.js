@@ -2,8 +2,16 @@ var harvester = require('../../lib/harvester');
 var JSONAPI_Error = harvester.JSONAPI_Error;
 var RSVP = require('rsvp');
 var Joi = require('joi');
+var Promise = require('bluebird').Promise;
 
 function createApp(options) {
+    options.authFunction = function(req, permission) {
+        console.log(req.path)
+        return new Promise(function(resolve, reject) {
+            if(req.path === '/plants') return reject();
+            resolve();
+        });
+    };
 
     var harvesterApp = harvester(options)
 
@@ -17,7 +25,7 @@ function createApp(options) {
                     {ref: 'person', inverse: 'lovers'}
                 ]
             }
-        })
+        }, {auth : false})
 
         .resource('pet', {
             name: Joi.string().required().description('name'),
@@ -25,18 +33,22 @@ function createApp(options) {
             links : {
                 owner: 'person'
             }
-        })
+        }, {auth : false})
 
         .resource('cat', {
             name: Joi.string().required().description('name'),
             collars: Joi.array().required().description('collar'),
             hasToy: Joi.boolean().required().description('hasToy'),
             numToys: Joi.number().required().description('numToys'),
-        }, {namespace: 'animals'})
+        }, {namespace: 'animals', auth : false})
+
+        .resource('plant', {
+            name: Joi.string().required().description('name'),
+        })
 
         .resource('foobar', {
             foo: Joi.string().required().description('name')
-        })
+        }, {auth : false})
 
         .before(
         function (req, res) {
@@ -62,7 +74,6 @@ function createApp(options) {
             }
         }
     );
-
 
     harvesterApp.router.get('/random-error', function (req, res, next) {
         next(new Error('this is an error'));
