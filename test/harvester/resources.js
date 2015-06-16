@@ -59,7 +59,7 @@ describe('resources', function () {
   describe('posting a duplicate resource', function () {
     it('in collection \'people\'', function (done) {
       var body = {people: []};
-      body.people.push(_.cloneDeep(fixtures().data["person"][0]));
+      body.people.push(_.cloneDeep(fixtures().data.people[0]));
       body.people[0].id = ids["people"][0];
       RSVP.all([ids["people"][0]].map(function () {
             return new Promise(function (resolve) {

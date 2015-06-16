@@ -10,7 +10,7 @@ var config = require('../config.js');
 describe("includes", function () {
 
   var ids;
-  before(function () {
+  beforeEach(function () {
     this.timeout(50000);
     return require('./fixtures.js')().seed().then(function (result) {
       ids = result;

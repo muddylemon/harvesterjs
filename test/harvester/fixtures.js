@@ -1,4 +1,6 @@
 var _ = require('lodash');
+var fs = require('fs');
+var path = require('path');
 var inflect = require('i')();
 var request = require('supertest');
 var RSVP = require('rsvp');
@@ -6,29 +8,22 @@ var Promise = RSVP.Promise;
 
 var config = require('../config.js');
 
-module.exports = function () {
-  var standardFixture = {"person": [
-    {
-      "name": "Dilbert",
-      "appearances": 3457,
-      "id": "24b9e720-0a51-11e5-bd6f-291dee7167a0"
+function FixturesSync() {
+  var fixtureList = fs.readdirSync(path.join(__dirname, './fixtures'));
+  var fixtures;
 
-    },
-    {
-      "name": "Wally",
-      "appearances": 1934
-    }
-  ],
-    "pet": [
-      {
-        "name": "Dogbert",
-        "appearances": 1903
-      },
-      {
-        "name": "Ratbert",
-        "appearances": 509
-      }
-    ]};
+  if (!fixtures) {
+    fixtures = {};
+    _.forEach(fixtureList, function A(value) {
+      fixtures[path.basename(value, '.js')] = require('./fixtures/' + value);
+    });
+  }
+  return fixtures;
+}
+
+var standardFixture = FixturesSync();
+
+module.exports = function () {
 
   function doSeed(key, value, resolve, reject) {
     var body = {};
