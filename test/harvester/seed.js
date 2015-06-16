@@ -58,23 +58,21 @@ module.exports = function (configuration) {
   }
 
   return {
-    beforeEach: function (fixture, timeout, app) {
+    beforeEach: function (fixture, timeout) {
       var idsHolder = {};
       beforeEach(function () {
         this.timeout(timeout || 50000);
-        app = app || this.app;
-        return seed(fixture, app.adapter.db).then(function (result) {
+        return seed(fixture, this.app.adapter.db).then(function (result) {
           idsHolder.ids = result;
         });
       });
       return idsHolder;
     },
-    before: function (fixture, timeout, app) {
+    before: function (fixture, timeout) {
       var idsHolder = {};
       before(function () {
         this.timeout(timeout || 50000);
-        app = app || this.app;
-        return seed(fixture, app.adapter.db).then(function (result) {
+        return seed(fixture, this.app.adapter.db).then(function (result) {
           idsHolder.ids = result;
         });
       });
