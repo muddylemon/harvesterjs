@@ -7,6 +7,12 @@ var Promise = RSVP.Promise;
 var config = require('../config.js');
 var fixtures = require('./fixtures');
 
+/**
+ * Configure seeding service.
+ *
+ * @param configuration optional seeding configuration; currently baseUrl of harvester app is required;
+ * @returns {{beforeEach: Function, before: Function}} configured seeding service
+ */
 module.exports = function (configuration) {
 
   function doSeed(key, value, resolve, reject) {
@@ -57,38 +63,49 @@ module.exports = function (configuration) {
     });
   }
 
+  function installHook(oneOfBefores, fixture, timeout, afterSeed) {
+    var idsHolder = {};
+    oneOfBefores(function () {
+      var that = this;
+      this.timeout(timeout || 50000);
+      return seed(fixture, this.app.adapter.db).then(function (result) {
+        idsHolder.ids = result;
+        if (afterSeed instanceof Function) {
+          return afterSeed.call(that, result);
+        } else {
+          return null;
+        }
+      });
+    });
+    return idsHolder;
+  }
+
   return {
+    /**
+     * Installs hook to seed fixture before each test.
+     *
+     * Requires harvester to be present in context under `app` property.
+     *
+     * @param fixture fixture object to be seeded i.e. {pets:[]}; if null, default fixture is used
+     * @param timeout timeout to use; optional
+     * @param afterSeed optional function to be called after seeding; it will be invoked in the same context as beforeEach
+     * @returns object holding id's of seeded items i.e. {pets:[1,2,3],people:[3,5,6]}
+     */
     beforeEach: function (fixture, timeout, afterSeed) {
-      var idsHolder = {};
-      beforeEach(function () {
-        var that = this;
-        this.timeout(timeout || 50000);
-        return seed(fixture, this.app.adapter.db).then(function (result) {
-          idsHolder.ids = result;
-          if (afterSeed instanceof Function) {
-            return afterSeed.call(that, result);
-          } else {
-            return null;
-          }
-        });
-      });
-      return idsHolder;
+      return installHook(beforeEach, fixture, timeout, afterSeed);
     },
+    /**
+     * Installs hook to seed fixture before all tests in surrounding suite.
+     *
+     * Requires harvester to be present in context under `app` property.
+     *
+     * @param fixture fixture object to be seeded i.e. {pets:[]}; if null, default fixture is used
+     * @param timeout timeout to use; optional
+     * @param afterSeed optional function to be called after seeding; it will be invoked in the same context as beforeEach
+     * @returns object holding id's of seeded items i.e. {pets:[1,2,3],people:[3,5,6]}
+     */
     before: function (fixture, timeout, afterSeed) {
-      var idsHolder = {};
-      before(function () {
-        var that = this;
-        this.timeout(timeout || 50000);
-        return seed(fixture, this.app.adapter.db).then(function (result) {
-          idsHolder.ids = result;
-          if (afterSeed instanceof Function) {
-            return afterSeed.call(that, result);
-          } else {
-            return null;
-          }
-        });
-      });
-      return idsHolder;
+      return installHook(before, fixture, timeout, afterSeed);
     }
   }
 };

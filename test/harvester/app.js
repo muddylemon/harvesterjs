@@ -72,6 +72,15 @@ function configureDefaultApp(app) {
   return app;
 }
 
+/**
+ * Creates bare instance of harvester app.
+ *
+ * It is the responsibility of configurator to initiate listening on specific port.
+ *
+ * @param configurator function that is given app instance param and should configure resources, etc.
+ * @param options harvester init options
+ * @returns {*} promise resolving to harvester app instance
+ */
 function create(configurator, options) {
   options = options || config.harvester.options;
   var app = harvester(options);
@@ -89,6 +98,13 @@ function create(configurator, options) {
 
 module.exports = {
   create: create,
+  /**
+   * Creates instance of harvester app with default routes.
+   *
+   * This function can be safely passed to before or beforeEach as it will attempt install app and config into mocha's context
+   *
+   * @returns {*} promise resolving to harvester app instance
+   */
   createDefault: function () {
     var that = this;
     return create(configureDefaultApp).then(function (app) {
