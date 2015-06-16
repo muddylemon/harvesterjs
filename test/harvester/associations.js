@@ -6,16 +6,20 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 var uuid = require('node-uuid');
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 
 describe('associations', function () {
 
   var idsHolder = seed().beforeEach();
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   describe('many to one association', function () {
     it('should be able to associate', function (done) {
+
       new Promise(function (resolve) {
         var payload = {};
 

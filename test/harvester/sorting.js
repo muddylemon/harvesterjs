@@ -4,11 +4,14 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 describe('sorting', function () {
 
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
   seed().beforeEach();
 
   it('should be possible to sort by name', function (done) {

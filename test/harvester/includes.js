@@ -4,13 +4,16 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 
 describe("includes", function () {
 
   var idsHolder = seed().beforeEach();
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   beforeEach(function (done) {
     function link(url, path, value) {

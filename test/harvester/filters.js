@@ -4,12 +4,15 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 describe("filters", function () {
 
   var idsHolder = seed().beforeEach();
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   it("should allow top-level resource filtering for collection routes", function (done) {
     request(config.baseUrl).get('/people?name=Dilbert').expect('Content-Type', /json/).expect(200).end(function (error, response) {

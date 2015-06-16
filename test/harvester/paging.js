@@ -4,11 +4,15 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 
 describe('paging', function () {
+
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   seed().beforeEach();
 

@@ -5,13 +5,16 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 var fixtures = require('./fixtures.js');
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 
 describe('resources', function () {
 
   var idsHolder = seed().beforeEach();
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   describe('getting a list of resources', function () {
     _.each(idsHolder.ids, function (resources, key) {

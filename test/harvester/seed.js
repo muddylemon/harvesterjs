@@ -27,10 +27,10 @@ module.exports = function (configuration) {
     });
   }
 
-  function seedType(key, value) {
+  function seedType(key, value, db) {
     key = inflect.pluralize(key);
     return new Promise(function (resolve, reject) {
-      var collection = config.app.adapter.db.collections[key];
+      var collection = db.collections[key];
       if (collection) {
         collection.drop(function () {
           doSeed(key, value, resolve, reject);
@@ -41,12 +41,12 @@ module.exports = function (configuration) {
     });
   }
 
-  function seed(customFixture) {
+  function seed(customFixture, db) {
     var fixture = null == customFixture ? fixtures() : customFixture;
     var keys = _.keys(fixture);
     var promises = [];
     _.forEach(keys, function (key) {
-      promises.push(seedType(key, fixture[key]));
+      promises.push(seedType(key, fixture[key], db));
     });
     return RSVP.all(promises).then(function (result) {
       var response = {};
@@ -58,21 +58,23 @@ module.exports = function (configuration) {
   }
 
   return {
-    beforeEach: function (fixture, timeout) {
+    beforeEach: function (fixture, timeout, app) {
       var idsHolder = {};
       beforeEach(function () {
         this.timeout(timeout || 50000);
-        return seed(fixture).then(function (result) {
+        app = app || this.app;
+        return seed(fixture, app.adapter.db).then(function (result) {
           idsHolder.ids = result;
         });
       });
       return idsHolder;
     },
-    before: function (fixture, timeout) {
+    before: function (fixture, timeout, app) {
       var idsHolder = {};
       before(function () {
         this.timeout(timeout || 50000);
-        return seed(fixture).then(function (result) {
+        app = app || this.app;
+        return seed(fixture, app.adapter.db).then(function (result) {
           idsHolder.ids = result;
         });
       });

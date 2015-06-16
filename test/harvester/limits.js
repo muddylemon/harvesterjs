@@ -4,11 +4,15 @@ var RSVP = require('rsvp');
 var Promise = RSVP.Promise;
 var should = require('should');
 
-var config = require('../config.js');
 var seed = require('./seed.js');
 
 
 describe('limits', function () {
+
+  var config;
+  beforeEach(function () {
+    config = this.config;
+  });
 
   seed().beforeEach();
 
