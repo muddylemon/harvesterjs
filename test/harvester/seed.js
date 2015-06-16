@@ -5,7 +5,7 @@ var RSVP = require('rsvp');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
-var fixtures = require('./fixtures.js');
+var fixtures = require('./fixtures');
 
 module.exports = function (configuration) {
 
@@ -58,22 +58,34 @@ module.exports = function (configuration) {
   }
 
   return {
-    beforeEach: function (fixture, timeout) {
+    beforeEach: function (fixture, timeout, afterSeed) {
       var idsHolder = {};
       beforeEach(function () {
+        var that = this;
         this.timeout(timeout || 50000);
         return seed(fixture, this.app.adapter.db).then(function (result) {
           idsHolder.ids = result;
+          if (afterSeed instanceof Function) {
+            return afterSeed.call(that, result);
+          } else {
+            return null;
+          }
         });
       });
       return idsHolder;
     },
-    before: function (fixture, timeout) {
+    before: function (fixture, timeout, afterSeed) {
       var idsHolder = {};
       before(function () {
+        var that = this;
         this.timeout(timeout || 50000);
         return seed(fixture, this.app.adapter.db).then(function (result) {
           idsHolder.ids = result;
+          if (afterSeed instanceof Function) {
+            return afterSeed.call(that, result);
+          } else {
+            return null;
+          }
         });
       });
       return idsHolder;

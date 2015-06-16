@@ -9,13 +9,8 @@ var seed = require('./seed.js');
 
 describe("includes", function () {
 
-  var idsHolder = seed().beforeEach();
-  var config;
-  beforeEach(function () {
-    config = this.config;
-  });
-
-  beforeEach(function (done) {
+  function setupLinks(ids) {
+    var that = this;
     function link(url, path, value) {
       return new Promise(function (resolve) {
         var data = [
@@ -25,22 +20,27 @@ describe("includes", function () {
             value: value
           }
         ];
-        request(config.baseUrl).patch(url).set('Content-Type', 'application/json').send(JSON.stringify(data)).end(function (err) {
+        request(that.config.baseUrl).patch(url).set('Content-Type', 'application/json').send(JSON.stringify(data)).end(function (err) {
           should.not.exist(err);
           resolve();
         });
       });
     }
 
-    RSVP.all([
-          link('/people/' + idsHolder.ids.people[0], '/people/0/soulmate', idsHolder.ids.people[1]), //TODO: harvester should take care about this on its own
-          link('/people/' + idsHolder.ids.people[1], '/people/0/soulmate', idsHolder.ids.people[0]),
+    return RSVP.all([
+      link('/people/' + ids.people[0], '/people/0/soulmate', ids.people[1]), //TODO: harvester should take care about this on its own
+      link('/people/' + ids.people[1], '/people/0/soulmate', ids.people[0]),
 
-          link('/people/' + idsHolder.ids.people[0], '/people/0/lovers', [idsHolder.ids.people[1]])
-        ]).then(function () {
-          done();
-        });
+      link('/people/' + ids.people[0], '/people/0/lovers', [ids.people[1]])
+    ])
+  }
+
+  var idsHolder = seed().beforeEach(null, null, setupLinks);
+  var config;
+  beforeEach(function () {
+    config = this.config;
   });
+
   describe("many to many", function () {
     it('should include referenced lovers when querying people', function (done) {
       request(config.baseUrl).get('/people?include=lovers').expect(200).end(function (err, res) {

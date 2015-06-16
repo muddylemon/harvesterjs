@@ -3,7 +3,7 @@ var _ = require('lodash');
 var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
-var fixtures = require('./fixtures.js');
+var fixtures = require('./fixtures');
 
 var seed = require('./seed.js');
 
