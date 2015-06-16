@@ -7,17 +7,12 @@ var Promise = RSVP.Promise;
 var uuid = require('node-uuid');
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
 describe('associations', function () {
 
-  var ids;
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed().then(function (result) {
-      ids = result;
-    });
-  });
+  var idsHolder = seed().beforeEach();
 
   describe('many to one association', function () {
     it('should be able to associate', function (done) {
@@ -27,29 +22,30 @@ describe('associations', function () {
         payload.people = [
           {
             links: {
-              pets: [ids.pets[0]]
+              pets: [idsHolder.ids.pets[0]]
             }
           }
         ];
 
-        request(config.baseUrl).put('/people/' + ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+        request(config.baseUrl).put('/people/' + idsHolder.ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error,
+                                                                                                                                                 response) {
           should.not.exist(error);
           var body = JSON.parse(response.text);
-          (body.people[0].links.pets).should.containEql(ids.pets[0]);
+          (body.people[0].links.pets).should.containEql(idsHolder.ids.pets[0]);
           resolve();
         });
       }).then(function () {
-            request(config.baseUrl).get('/pets/' + ids.pets[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/pets/' + idsHolder.ids.pets[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
-              (body.pets[0].links.owner).should.equal(ids.people[0]);
+              (body.pets[0].links.owner).should.equal(idsHolder.ids.people[0]);
               done();
             });
           });
     });
     it('should be able to dissociate', function (done) {
       new Promise(function (resolve) {
-        request(config.baseUrl).patch('/people/' + ids.people[0]).send([
+        request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).send([
               {path: '/people/0/links/pets', op: 'replace', value: []}
             ]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
@@ -58,7 +54,7 @@ describe('associations', function () {
               resolve();
             });
       }).then(function () {
-            request(config.baseUrl).get('/pets/' + ids.pets[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/pets/' + idsHolder.ids.pets[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
               should.not.exist(body.pets[0].links);
@@ -76,29 +72,29 @@ describe('associations', function () {
         payload.pets = [
           {
             links: {
-              owner: ids.people[0]
+              owner: idsHolder.ids.people[0]
             }
           }
         ];
 
-        request(config.baseUrl).put('/pets/' + ids.pets[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+        request(config.baseUrl).put('/pets/' + idsHolder.ids.pets[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error, response) {
           should.not.exist(error);
           var body = JSON.parse(response.text);
-          should.equal(body.pets[0].links.owner, ids.people[0]);
+          should.equal(body.pets[0].links.owner, idsHolder.ids.people[0]);
           resolve();
         });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[0]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
-              (body.people[0].links.pets).should.containEql(ids.pets[0]);
+              (body.people[0].links.pets).should.containEql(idsHolder.ids.pets[0]);
               done();
             });
           });
     });
     it('should be able to dissociate', function (done) {
       new Promise(function (resolve) {
-        request(config.baseUrl).patch('/pets/' + ids.pets[0]).send([
+        request(config.baseUrl).patch('/pets/' + idsHolder.ids.pets[0]).send([
               {path: '/pets/0/links/owner', op: 'replace', value: null}
             ]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
@@ -107,7 +103,7 @@ describe('associations', function () {
               resolve();
             });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
               should.not.exist(body.people[0].links);
@@ -125,29 +121,30 @@ describe('associations', function () {
         payload.people = [
           {
             links: {
-              soulmate: ids.people[1]
+              soulmate: idsHolder.ids.people[1]
             }
           }
         ];
 
-        request(config.baseUrl).put('/people/' + ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+        request(config.baseUrl).put('/people/' + idsHolder.ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error,
+                                                                                                                                                 response) {
           should.not.exist(error);
           var body = JSON.parse(response.text);
-          should.equal(body.people[0].links.soulmate, ids.people[1]);
+          should.equal(body.people[0].links.soulmate, idsHolder.ids.people[1]);
           resolve();
         });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
-              (body.people[0].links.soulmate).should.equal(ids.people[0]);
+              (body.people[0].links.soulmate).should.equal(idsHolder.ids.people[0]);
               done();
             });
           });
     });
     it('should be able to dissociate', function (done) {
       new Promise(function (resolve) {
-        request(config.baseUrl).patch('/people/' + ids.people[0]).send([
+        request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).send([
               {path: '/people/0/links/soulmate', op: 'replace', value: null}
             ]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
@@ -156,7 +153,7 @@ describe('associations', function () {
               resolve();
             });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
               should.not.exist(body.people[0].links);
@@ -174,29 +171,30 @@ describe('associations', function () {
         payload.people = [
           {
             links: {
-              lovers: [ids.people[1]]
+              lovers: [idsHolder.ids.people[1]]
             }
           }
         ];
 
-        request(config.baseUrl).put('/people/' + ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+        request(config.baseUrl).put('/people/' + idsHolder.ids.people[0]).send(payload).expect('Content-Type', /json/).expect(200).end(function (error,
+                                                                                                                                                 response) {
           should.not.exist(error);
           var body = JSON.parse(response.text);
-          (body.people[0].links.lovers).should.containEql(ids.people[1]);
+          (body.people[0].links.lovers).should.containEql(idsHolder.ids.people[1]);
           resolve();
         });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
-              (body.people[0].links.lovers).should.containEql(ids.people[0]);
+              (body.people[0].links.lovers).should.containEql(idsHolder.ids.people[0]);
               done();
             });
           });
     });
     it('should be able to dissociate', function (done) {
       new Promise(function (resolve) {
-        request(config.baseUrl).patch('/people/' + ids.people[0]).send([
+        request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).send([
               {path: '/people/0/links/lovers', op: 'replace', value: []}
             ]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
@@ -205,7 +203,7 @@ describe('associations', function () {
               resolve();
             });
       }).then(function () {
-            request(config.baseUrl).get('/people/' + ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
+            request(config.baseUrl).get('/people/' + idsHolder.ids.people[1]).expect('Content-Type', /json/).expect(200).end(function (error, response) {
               should.not.exist(error);
               var body = JSON.parse(response.text);
               should.not.exist(body.people[0].links);

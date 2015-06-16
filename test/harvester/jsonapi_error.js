@@ -5,14 +5,12 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
 describe('jsonapi error handling', function () {
 
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed();
-  });
+  seed().beforeEach();
 
   describe('raise a JSONAPI_Error error in foobar before callback', function () {
     it('should respond with a 400 and content-type set to application/vnd.api+json', function (done) {

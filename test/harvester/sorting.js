@@ -5,13 +5,11 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 describe('sorting', function () {
 
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed();
-  });
+  seed().beforeEach();
 
   it('should be possible to sort by name', function (done) {
     request(config.baseUrl).get('/people?sort=name').expect(200).end(function (err, res) {

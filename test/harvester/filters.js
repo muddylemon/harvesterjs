@@ -5,16 +5,11 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 describe("filters", function () {
 
-  var ids;
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed().then(function (_ids) {
-      ids = _ids;
-    });
-  });
+  var idsHolder = seed().beforeEach();
 
   it("should allow top-level resource filtering for collection routes", function (done) {
     request(config.baseUrl).get('/people?name=Dilbert').expect('Content-Type', /json/).expect(200).end(function (error, response) {
@@ -55,19 +50,19 @@ describe("filters", function () {
       {
         op: 'replace',
         path: '/people/0/pets',
-        value: [ids.pets[0], ids.pets[1]]
+        value: [idsHolder.ids.pets[0], idsHolder.ids.pets[1]]
       }
     ];
     //Give a man a pet
-    request(config.baseUrl).patch('/people/' + ids.people[0]).set('Content-Type',
+    request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).set('Content-Type',
             'application/vnd.api+json').send(JSON.stringify(cmd)).expect(200).end(function (err) {
           should.not.exist(err);
-          request(config.baseUrl).get('/people?filter[pets]=' + ids.pets[0]).expect(200).end(function (err, res) {
+          request(config.baseUrl).get('/people?filter[pets]=' + idsHolder.ids.pets[0]).expect(200).end(function (err, res) {
             should.not.exist(err);
             var data = JSON.parse(res.text);
             (data.people).should.be.an.Array;
             //Make sure filtering was run by ObjectId
-            (/[0-9a-f]{24}/.test(ids.pets[0])).should.be.ok;
+            (/[0-9a-f]{24}/.test(idsHolder.ids.pets[0])).should.be.ok;
             (/[0-9a-f]{24}/.test(data.people[0].links.pets[0])).should.be.ok;
             done();
           });
@@ -79,19 +74,19 @@ describe("filters", function () {
         {
           op: 'replace',
           path: '/people/0/soulmate',
-          value: ids.people[1]
+          value: idsHolder.ids.people[1]
         }
       ];
-      request(config.baseUrl).patch('/people/' + ids.people[0]).set('content-type',
+      request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).set('content-type',
               'application/json').send(JSON.stringify(upd)).expect(200).end(function (err) {
             should.not.exist(err);
             resolve();
           });
     }).then(function () {
-          request(config.baseUrl).get('/people?filter[soulmate]=' + ids.people[1]).expect(200).end(function (err, res) {
+          request(config.baseUrl).get('/people?filter[soulmate]=' + idsHolder.ids.people[1]).expect(200).end(function (err, res) {
             should.not.exist(err);
             var body = JSON.parse(res.text);
-            (body.people[0].id).should.equal(ids.people[0]);
+            (body.people[0].id).should.equal(idsHolder.ids.people[0]);
             done();
           });
         });
@@ -102,15 +97,15 @@ describe("filters", function () {
         {
           op: 'add',
           path: '/people/0/links/houses/-',
-          value: ids.houses[0]
+          value: idsHolder.ids.houses[0]
         },
         {
           op: 'add',
           path: '/people/0/links/houses/-',
-          value: ids.houses[1]
+          value: idsHolder.ids.houses[1]
         }
       ];
-      request(config.baseUrl).patch('/people/' + ids.people[0]).set('content-type', 'application/json').send(JSON.stringify(upd)).expect(200).end(function (err,
+      request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0]).set('content-type', 'application/json').send(JSON.stringify(upd)).expect(200).end(function (err,
                                                                                                                                                             res) {
             should.not.exist(err);
             resolve();
@@ -121,22 +116,22 @@ describe("filters", function () {
               {
                 op: 'add',
                 path: '/people/0/links/houses/-',
-                value: ids.houses[1]
+                value: idsHolder.ids.houses[1]
               },
               {
                 op: 'add',
                 path: '/people/0/links/houses/-',
-                value: ids.houses[2]
+                value: idsHolder.ids.houses[2]
               }
             ];
-            request(config.baseUrl).patch('/people/' + ids.people[1]).set('content-type',
+            request(config.baseUrl).patch('/people/' + idsHolder.ids.people[1]).set('content-type',
                     'application/json').send(JSON.stringify(upd)).expect(200).end(function (err, res) {
                   should.not.exist(err);
                   resolve();
                 });
           });
         }).then(function () {
-          request(config.baseUrl).get('/people?filter[houses][in]=' + ids.houses[0] + ',' + ids.houses[1]).expect(200).end(function (err, res) {
+          request(config.baseUrl).get('/people?filter[houses][in]=' + idsHolder.ids.houses[0] + ',' + idsHolder.ids.houses[1]).expect(200).end(function (err, res) {
             should.not.exist(err);
             var body = JSON.parse(res.text);
             (body.people.length).should.equal(2);
@@ -190,7 +185,7 @@ describe("filters", function () {
   });
   it.skip('should support $in query against external refs values', function (done) {
     new Promise(function (resolve) {
-      request(config.baseUrl).patch("/cars/" + ids.cars[0]).set("content-type", "application/json").send(JSON.stringify([
+      request(config.baseUrl).patch("/cars/" + idsHolder.ids.cars[0]).set("content-type", "application/json").send(JSON.stringify([
             {
               path: "/cars/0/MOT",
               op: "replace",
@@ -220,14 +215,14 @@ describe("filters", function () {
   });
   it.skip('should be able to run in query against links', function (done) {
     new Promise(function (resolve) {
-      request(config.baseUrl).patch("/people/" + ids.people[1]).set('content-type', 'application/json').send(JSON.stringify([
-            {op: "replace", path: '/people/0/soulmate', value: ids.people[0]}
+      request(config.baseUrl).patch("/people/" + idsHolder.ids.people[1]).set('content-type', 'application/json').send(JSON.stringify([
+            {op: "replace", path: '/people/0/soulmate', value: idsHolder.ids.people[0]}
           ])).end(function (err) {
             should.not.exist(err);
             resolve();
           });
     }).then(function () {
-          request(config.baseUrl).get("/people?filter[soulmate][in]=" + ids.people[0] + "," + ids.people[1]).expect(200).end(function (err, res) {
+          request(config.baseUrl).get("/people?filter[soulmate][in]=" + idsHolder.ids.people[0] + "," + idsHolder.ids.people[1]).expect(200).end(function (err, res) {
             should.not.exist(err);
             var body = JSON.parse(res.text);
             body.people.length.should.equal(2);
@@ -281,10 +276,10 @@ describe("filters", function () {
     });
   });
   it('should have id filter', function (done) {
-    request(config.baseUrl).get('/people?id=' + ids.people[0]).expect(200).end(function (err, res) {
+    request(config.baseUrl).get('/people?id=' + idsHolder.ids.people[0]).expect(200).end(function (err, res) {
       should.not.exist(err);
       var body = JSON.parse(res.text);
-      (body.people[0].id).should.equal(ids.people[0]);
+      (body.people[0].id).should.equal(idsHolder.ids.people[0]);
       done();
     });
   });

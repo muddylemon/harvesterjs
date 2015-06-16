@@ -5,17 +5,12 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
 describe("includes", function () {
 
-  var ids;
-  beforeEach(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed().then(function (result) {
-      ids = result;
-    });
-  });
+  var idsHolder = seed().beforeEach();
 
   beforeEach(function (done) {
     function link(url, path, value) {
@@ -35,10 +30,10 @@ describe("includes", function () {
     }
 
     RSVP.all([
-          link('/people/' + ids.people[0], '/people/0/soulmate', ids.people[1]), //TODO: harvester should take care about this on its own
-          link('/people/' + ids.people[1], '/people/0/soulmate', ids.people[0]),
+          link('/people/' + idsHolder.ids.people[0], '/people/0/soulmate', idsHolder.ids.people[1]), //TODO: harvester should take care about this on its own
+          link('/people/' + idsHolder.ids.people[1], '/people/0/soulmate', idsHolder.ids.people[0]),
 
-          link('/people/' + ids.people[0], '/people/0/lovers', [ids.people[1]])
+          link('/people/' + idsHolder.ids.people[0], '/people/0/lovers', [idsHolder.ids.people[1]])
         ]).then(function () {
           done();
         });
@@ -88,7 +83,7 @@ describe("includes", function () {
 
   /*
    it('should include uniq documents', function(done){
-   request(config.baseUrl).get('/people/' + ids.people[1] + '?include=houses,estate')
+   request(config.baseUrl).get('/people/' + idsHolder.ids.people[1] + '?include=houses,estate')
    .end(function(err, res){
    should.not.exist(err);
    var body = JSON.parse(res.text);
@@ -100,11 +95,11 @@ describe("includes", function () {
    beforeEach(function(done){
    //Create external bindings;
    new Promise(function(resolve){
-   request(config.baseUrl).patch('/cars/' + ids.cars[0])
+   request(config.baseUrl).patch('/cars/' + idsHolder.ids.cars[0])
    .set('content-type', 'application/json')
    .send(JSON.stringify([
    {op: 'replace', path: '/cars/0/MOT', value: 'motOne'},
-   {op: 'replace', path: '/cats/0/links/owner', value: ids.people[0]}
+   {op: 'replace', path: '/cats/0/links/owner', value: idsHolder.ids.people[0]}
    ]))
    .expect(200)
    .end(function(err){
@@ -113,11 +108,11 @@ describe("includes", function () {
    });
    }).then(function(){
    return new Promise(function(resolve){
-   request(config.baseUrl).patch('/cars/' + ids.cars[1])
+   request(config.baseUrl).patch('/cars/' + idsHolder.ids.cars[1])
    .set('content-type', 'application/json')
    .send(JSON.stringify([
    {op: 'replace', path: '/cars/0/MOT', value: 'motTwo'},
-   {op: 'replace', path: '/cars/0/links/owner', value: ids.people[1]}
+   {op: 'replace', path: '/cars/0/links/owner', value: idsHolder.ids.people[1]}
    ]))
    .expect(200)
    .end(function(err){
@@ -126,10 +121,10 @@ describe("includes", function () {
    });
    });
    }).then(function(){
-   request(config.baseUrl).patch('/people/' + ids.people[0])
+   request(config.baseUrl).patch('/people/' + idsHolder.ids.people[0])
    .set('content-type', 'application/json')
    .send(JSON.stringify([
-   {op: 'replace', path: '/people/0/links/soulmate', value: ids.people[1]}
+   {op: 'replace', path: '/people/0/links/soulmate', value: idsHolder.ids.people[1]}
    ]))
    .expect(200)
    .end(function(err){
@@ -169,7 +164,7 @@ describe("includes", function () {
    });
    });
    it('should mark external include when resource is requested by id', function(done){
-   request(config.baseUrl).get('/cars/' + ids.cars[0] + '?include=MOT')
+   request(config.baseUrl).get('/cars/' + idsHolder.ids.cars[0] + '?include=MOT')
    .expect(200)
    .end(function(err, res){
    should.not.exist(err);
@@ -179,7 +174,7 @@ describe("includes", function () {
    });
    });
    it('should mark external include when its nested and resource is requested by id', function(done){
-   request(config.baseUrl).get('/people/' + ids.people[0] + '?include=cars.MOT,soulmate.cars.MOT')
+   request(config.baseUrl).get('/people/' + idsHolder.ids.people[0] + '?include=cars.MOT,soulmate.cars.MOT')
    .expect(200)
    .end(function(err, res){
    should.not.exist(err);

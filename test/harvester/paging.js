@@ -5,14 +5,12 @@ var request = require('supertest');
 var Promise = RSVP.Promise;
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
 describe('paging', function () {
 
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed();
-  });
+  seed().beforeEach();
 
   it('should be possible to get page 1', function (done) {
     request(config.baseUrl).get('/people?sort=name&offset=0&limit=1').expect(200).end(function (err, res) {

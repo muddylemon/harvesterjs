@@ -5,14 +5,12 @@ var Promise = RSVP.Promise;
 var should = require('should');
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
 describe('limits', function () {
 
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed();
-  });
+  seed().beforeEach();
 
   describe('limits', function () {
     it('should be possible to tell how many documents to return', function (done) {

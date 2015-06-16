@@ -6,26 +6,21 @@ var Promise = RSVP.Promise;
 var fixtures = require('./fixtures.js');
 
 var config = require('../config.js');
+var seed = require('./seed.js');
 
 
-describe('resources', function () {
+describe.only('resources', function () {
 
-  var ids;
-  before(function () {
-    this.timeout(50000);
-    return require('./fixtures.js')().seed().then(function (_ids) {
-      ids = _ids;
-    });
-  });
+  var idsHolder = seed().beforeEach();
 
   describe('getting a list of resources', function () {
-    _.each(ids, function (resources, key) {
+    _.each(idsHolder.ids, function (resources, key) {
 
       it('in collection "' + key + '"', function (done) {
         request(config.baseUrl).get('/' + key).expect('Content-Type', /json/).expect(200).end(function (error, response) {
           should.not.exist(error);
           var body = JSON.parse(response.text);
-          ids[key].forEach(function (id) {
+          idsHolder.ids[key].forEach(function (id) {
             _.contains(_.pluck(body[key], 'id'), id).should.equal(true);
           });
           done();
@@ -35,10 +30,10 @@ describe('resources', function () {
   });
 
   describe('getting each individual resource', function () {
-    _.each(ids, function (resources, key) {
+    _.each(idsHolder.ids, function (resources, key) {
 
       it('in collection "' + key + '"', function (done) {
-        RSVP.all(ids[key].map(function (id) {
+        RSVP.all(idsHolder.ids[key].map(function (id) {
               return new Promise(function (resolve) {
                 request(config.baseUrl).get('/' + key + '/' + id).expect('Content-Type', /json/).expect(200).end(function (error, response) {
                   should.not.exist(error);
@@ -59,9 +54,9 @@ describe('resources', function () {
   describe('posting a duplicate resource', function () {
     it('in collection \'people\'', function (done) {
       var body = {people: []};
-      body.people.push(_.cloneDeep(fixtures().data.people[0]));
-      body.people[0].id = ids["people"][0];
-      RSVP.all([ids["people"][0]].map(function () {
+      body.people.push(_.cloneDeep(fixtures().people[0]));
+      body.people[0].id = idsHolder.ids.people[0];
+      RSVP.all([idsHolder.ids.people[0]].map(function () {
             return new Promise(function (resolve) {
               request(config.baseUrl).post('/people/').send(body).expect('Content-Type', /json/).expect(409).end(function (error, response) {
                 should.not.exist(error);
