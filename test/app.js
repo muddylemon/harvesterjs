@@ -113,5 +113,10 @@ module.exports = {
       that.config = config;
       return app;
     });
+  },
+  destroy: function () {
+    if (this.app && this.app.httpServer) {
+      this.app.httpServer.close();
+    }
   }
 };
