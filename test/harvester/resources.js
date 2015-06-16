@@ -9,7 +9,7 @@ var config = require('../config.js');
 var seed = require('./seed.js');
 
 
-describe.only('resources', function () {
+describe('resources', function () {
 
   var idsHolder = seed().beforeEach();
 
