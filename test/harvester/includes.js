@@ -11,6 +11,7 @@ describe("includes", function () {
 
   function setupLinks(ids) {
     var that = this;
+
     function link(url, path, value) {
       return new Promise(function (resolve) {
         var data = [
@@ -22,7 +23,7 @@ describe("includes", function () {
         ];
         request(that.config.baseUrl).patch(url).set('Content-Type', 'application/json').send(JSON.stringify(data)).end(function (err) {
           should.not.exist(err);
-          resolve();
+          setTimeout(resolve, 100);//sometimes tests fail if resolve is called immediately, probably mongo has problems indexing concurrently
         });
       });
     }
@@ -35,7 +36,7 @@ describe("includes", function () {
     ])
   }
 
-  var idsHolder = seed().beforeEach(null, null, setupLinks);
+  seed().beforeEach(null, null, setupLinks);
   var config;
   beforeEach(function () {
     config = this.config;
