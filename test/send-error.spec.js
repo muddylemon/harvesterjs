@@ -7,11 +7,11 @@
 
 // dependencies
 var should = require('should');
-var JsonApiError = require('../../lib/jsonapi-error');
+var JsonApiError = require('../lib/jsonapi-error');
 
 
 // module under test
-var sendError = require('../../lib/send-error');
+var sendError = require('../lib/send-error');
 
 
 describe('function sendError', function () {

@@ -1,8 +1,8 @@
-var harvester = require('../../lib/harvester');
+var harvester = require('../lib/harvester');
 var JSONAPI_Error = harvester.JSONAPI_Error;
 var RSVP = require('rsvp');
 var Promise = RSVP.Promise;
-var config = require('../config.js');
+var config = require('./config.js');
 
 function configureDefaultApp(app) {
   app.resource('person', {
@@ -85,15 +85,17 @@ function create(configurator, options) {
   options = options || config.harvester.options;
   var app = harvester(options);
   configurator(app);
-  return new Promise(function (resolve, reject) {
-    var awaitConnection = app.adapter.awaitConnection();
-    awaitConnection.then(resolve);
-    awaitConnection.catch(reject);
+  /**
+   * Return promise instead of app in case in future we need to do any synchronizations or other async stuff before passing the app.
+   * This would be also very good for Mocha's beforeEach expectation of promise.
+   */
+  return new Promise(function (resolve) {
+    resolve(app);
   }).then(function () {
         console.log("--------------------");
         console.log("Running tests:");
         return app;
-      })
+      });
 }
 
 module.exports = {

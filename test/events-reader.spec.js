@@ -28,7 +28,7 @@ var debug = require('debug')('events-reader-test');
 
 var expect = chai.expect;
 
-var harvester = require('../../lib/harvester');
+var harvester = require('../lib/harvester');
 
 var createReportPromise;
 var createReportResponseDfd;

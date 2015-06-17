@@ -4,7 +4,7 @@ var request = require('supertest');
 var RSVP = require('rsvp');
 var Promise = RSVP.Promise;
 
-var config = require('../config.js');
+var config = require('./config.js');
 var fixtures = require('./fixtures');
 
 /**
@@ -15,7 +15,7 @@ var fixtures = require('./fixtures');
  */
 module.exports = function (configuration) {
 
-  function doSeed(key, value, resolve, reject) {
+  function postData(key, value, resolve, reject) {
     var body = {};
     body[key] = value;
     request((configuration || config).baseUrl).post('/' + key).send(body).expect('Content-Type', /json/).expect(201).end(function (error, response) {
@@ -33,16 +33,16 @@ module.exports = function (configuration) {
     });
   }
 
-  function seedType(key, value, db) {
-    key = inflect.pluralize(key);
+  function cleanAndPost(collectionName, items, db) {
+    collectionName = inflect.pluralize(collectionName);//TODO check if this could be removed
     return new Promise(function (resolve, reject) {
-      var collection = db.collections[key];
+      var collection = db.collections[collectionName];
       if (collection) {
         collection.drop(function () {
-          doSeed(key, value, resolve, reject);
+          postData(collectionName, items, resolve, reject);
         });
       } else {
-        doSeed(key, value, resolve, reject);
+        postData(collectionName, items, resolve, reject);
       }
     });
   }
@@ -52,7 +52,7 @@ module.exports = function (configuration) {
     var keys = _.keys(fixture);
     var promises = [];
     _.forEach(keys, function (key) {
-      promises.push(seedType(key, fixture[key], db));
+      promises.push(cleanAndPost(key, fixture[key], db));
     });
     return RSVP.all(promises).then(function (result) {
       var response = {};

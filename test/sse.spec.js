@@ -1,5 +1,5 @@
 var $http = require('http-as-promised');
-var harvester = require('../../lib/harvester');
+var harvester = require('../lib/harvester');
 var baseUrl = 'http://localhost:' + 8002;
 var chai = require('chai');
 var expect = chai.expect;
