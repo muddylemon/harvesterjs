@@ -4,7 +4,7 @@ var RSVP = require('rsvp');
 var Promise = RSVP.Promise;
 var should = require('should');
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 
 describe('limits', function () {
@@ -14,7 +14,7 @@ describe('limits', function () {
     config = this.config;
   });
 
-  seed().beforeEach();
+  seeder().beforeEach();
 
   describe('limits', function () {
     it('should be possible to tell how many documents to return', function (done) {

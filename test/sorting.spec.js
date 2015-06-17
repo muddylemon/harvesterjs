@@ -4,7 +4,7 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 describe('sorting', function () {
 
@@ -12,7 +12,7 @@ describe('sorting', function () {
   beforeEach(function () {
     config = this.config;
   });
-  seed().beforeEach();
+  seeder().beforeEach();
 
   it('should be possible to sort by name', function (done) {
     request(config.baseUrl).get('/people?sort=name').expect(200).end(function (err, res) {

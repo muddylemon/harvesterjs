@@ -4,7 +4,7 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 
 describe('paging', function () {
@@ -14,7 +14,7 @@ describe('paging', function () {
     config = this.config;
   });
 
-  seed().beforeEach();
+  seeder().beforeEach();
 
   it('should be possible to get page 1', function (done) {
     request(config.baseUrl).get('/people?sort=name&offset=0&limit=1').expect(200).end(function (err, res) {

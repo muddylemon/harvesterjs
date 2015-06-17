@@ -4,7 +4,7 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 
 describe('jsonapi error handling', function () {
@@ -14,7 +14,7 @@ describe('jsonapi error handling', function () {
     config = this.config;
   });
 
-  seed().beforeEach();
+  seeder().beforeEach();
 
   describe('raise a JSONAPI_Error error in foobar before callback', function () {
     it('should respond with a 400 and content-type set to application/vnd.api+json', function (done) {

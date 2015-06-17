@@ -4,11 +4,11 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 describe("filters", function () {
 
-  var idsHolder = seed().beforeEach();
+  var idsHolder = seeder().beforeEach();
   var config;
   beforeEach(function () {
     config = this.config;

@@ -10,6 +10,11 @@ var fixtures = require('./fixtures');
 /**
  * Configure seeding service.
  *
+ * Sample usage:
+ *
+ * seed().beforeEach();
+ * seed({baseUrl:'http://localhost:8011/'}).before({pets:[{name:'Toro'}]});
+ *
  * @param configuration optional seeding configuration; currently baseUrl of harvester app is required;
  * @returns {{beforeEach: Function, before: Function}} configured seeding service
  */

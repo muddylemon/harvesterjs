@@ -4,7 +4,7 @@ var RSVP = require('rsvp');
 var request = require('supertest');
 var Promise = RSVP.Promise;
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 
 describe("includes", function () {
@@ -36,7 +36,7 @@ describe("includes", function () {
     ])
   }
 
-  seed().beforeEach(null, null, setupLinks);
+  seeder().beforeEach(null, null, setupLinks);
   var config;
   beforeEach(function () {
     config = this.config;

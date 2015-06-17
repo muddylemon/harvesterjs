@@ -2,7 +2,7 @@ var request = require('supertest');
 var should = require('should');
 
 var appFactory = require('./app.js');
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 /**
  * This test case demonstrates how to setup test with custom harvester on different port
@@ -23,7 +23,7 @@ describe('Custom harvester demo', function () {
     });
   });
 
-  seed({baseUrl: baseUrl}).beforeEach({geeks: [
+  seeder({baseUrl: baseUrl}).beforeEach({geeks: [
     {name: 'Jack'}
   ]});
 

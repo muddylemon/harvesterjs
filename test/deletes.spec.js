@@ -2,11 +2,11 @@ var _ = require('lodash');
 var should = require('should');
 var $http = require('http-as-promised');
 
-var seed = require('./seed.js');
+var seeder = require('./seeder.js');
 
 describe("deletes", function () {
 
-  var idsHolder = seed().beforeEach();
+  var idsHolder = seeder().beforeEach();
   var config;
   beforeEach(function () {
     config = this.config;
