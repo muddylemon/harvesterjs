@@ -1,7 +1,6 @@
 var harvester = require('../lib/harvester');
 var JSONAPI_Error = harvester.JSONAPI_Error;
-var RSVP = require('rsvp');
-var Promise = RSVP.Promise;
+var Promise = require('bluebird');
 var config = require('./config.js');
 
 function configureDefaultApp(app) {
@@ -41,7 +40,7 @@ function configureDefaultApp(app) {
 
         if (foobar.foo && foobar.foo === 'bar') {
           // promise
-          return new RSVP.Promise(function (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             reject(new JSONAPI_Error({
               status: 400,
               detail: 'Foo was bar'

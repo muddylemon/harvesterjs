@@ -1,8 +1,7 @@
 var _ = require('lodash');
 var inflect = require('i')();
 var request = require('supertest');
-var RSVP = require('rsvp');
-var Promise = RSVP.Promise;
+var Promise = require('bluebird');
 
 var config = require('./config.js');
 var fixtures = require('./fixtures');
@@ -59,7 +58,7 @@ module.exports = function (configuration) {
     _.forEach(keys, function (key) {
       promises.push(cleanAndPost(key, fixture[key], db));
     });
-    return RSVP.all(promises).then(function (result) {
+    return Promise.all(promises).then(function (result) {
       var response = {};
       _.forEach(result, function (item) {
         _.extend(response, item);
