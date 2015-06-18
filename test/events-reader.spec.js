@@ -35,7 +35,17 @@ var createReportResponseDfd;
 
 // todo checkpoints, todo check skipping
 
-describe.skip('onChange callback, event capture and at-least-once delivery semantics', function () {
+var harvesterOptions = {
+    adapter: 'mongodb',
+    connectionString: 'mongodb://127.0.0.1:27017/test',
+    db: 'test',
+    inflect: true,
+    oplogConnectionString: 'mongodb://127.0.0.1:27017/local?slaveOk=true'
+};
+
+describe('onChange callback, event capture and at-least-once delivery semantics', function () {
+
+    var harvesterApp;
 
     describe('Given a post on a very controversial topic, ' +
     'and a new comment is posted or updated with content which contains profanity, ' +
@@ -46,17 +56,7 @@ describe.skip('onChange callback, event capture and at-least-once delivery seman
             var that = this;
             that.timeout(100000);
 
-            var options = {
-                adapter: 'mongodb',
-                connectionString: process.argv[2] || process.env.MONGODB_URL || "‌mongodb://127.0.0.1:27017/test",
-                db: 'test',
-                inflect: true,
-                oplogConnectionString : (process.argv[3] || process.env.OPLOG_MONGODB_URL || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
-            };
-
-            that.harvesterApp =
-                harvester(options)
-                    .resource('post', {
+            harvesterApp = harvester(harvesterOptions).resource('post', {
                         title: String
                     })
                     .onChange({
@@ -70,13 +70,12 @@ describe.skip('onChange callback, event capture and at-least-once delivery seman
                     })
                     .onChange({insert: reportAbusiveLanguage, update: reportAbusiveLanguage});
 
-            that.chaiExpress = chai.request(that.harvesterApp.router);
+            that.chaiExpress = chai.request(harvesterApp.router);
 
             var profanity = require('profanity-util');
 
             function reportAbusiveLanguage(id) {
-                return that.harvesterApp.adapter.find('comment', id.toString())
-                    .then(function (comment) {
+                return harvesterApp.adapter.find('comment', id.toString()).then(function (comment) {
                         var check = profanity.check(comment);
                         if (!!check && check.length > 0) {
                             return $http(
@@ -102,7 +101,7 @@ describe.skip('onChange callback, event capture and at-least-once delivery seman
                     });
             }
 
-            that.harvesterApp.listen(8001);
+            harvesterApp.listen(8001);
             done();
         });
 
@@ -114,10 +113,9 @@ describe.skip('onChange callback, event capture and at-least-once delivery seman
             createReportPromise = createReportResponseDfd.promise;
 
             console.log('drop database');
-            that.harvesterApp.adapter.db.db.dropDatabase();
+            harvesterApp.adapter.db.db.dropDatabase();
 
-            that.checkpointCreated = that.harvesterApp.eventsReader(process.env.OPLOG_MONGODB_URL || process.argv[3])
-                .then(function (EventsReader) {
+            that.checkpointCreated = harvesterApp.eventsReader(harvesterOptions.oplogConnectionString).then(function (EventsReader) {
 
                     that.eventsReader = new EventsReader();
 
@@ -127,7 +125,7 @@ describe.skip('onChange callback, event capture and at-least-once delivery seman
                     var now = BSON.Timestamp(0, (new Date() / 1000));
 
                     console.log('creating checkpoint with ts ' + now.getHighBits());
-                    return that.harvesterApp.adapter.create('checkpoint', {ts: now}).then(function () {
+                    return harvesterApp.adapter.create('checkpoint', {ts: now}).then(function () {
                         return done();
                     });
 
