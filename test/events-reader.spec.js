@@ -8,7 +8,8 @@ var BSON = require('mongodb').BSONPure;
 
 //require('longjohn');
 
-var baseUrl = 'http://localhost:' + 8001;
+var harvesterPort = 8003
+var baseUrl = 'http://localhost:' + harvesterPort;
 var reportAPI_baseUri = 'http://localhost:9988';
 
 var nock = require('nock');
@@ -101,7 +102,7 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
                     });
             }
 
-            harvesterApp.listen(8001);
+            harvesterApp.listen(harvesterPort);
             done();
         });
 
