@@ -3,7 +3,7 @@ var JSONAPI_Error = harvester.JSONAPI_Error;
 var Promise = require('bluebird');
 var config = require('./config.js');
 
-function configureDefaultApp(app) {
+function configureApp(app) {
   app.resource('person', {
     name: String,
     appearances: Number,
@@ -66,52 +66,23 @@ function configureDefaultApp(app) {
     next(new JSONAPI_Error({status: 400, detail: 'Bar was not foo'}));
   });
 
-  app.listen(config.harvester.port);
-
   return app;
 }
 
 /**
- * Creates bare instance of harvester app.
+ * Creates instance of harvester app with default routes.
  *
- * It is the responsibility of configurator to initiate listening on specific port.
+ * This function can be safely passed to before or beforeEach as it will attempt install app and config into mocha's context
  *
- * @param configurator function that is given app instance param and should configure resources, etc.
- * @param options harvester init options
+ * beforeEach(require('./app.js'));
+ *
  * @returns {*} promise resolving to harvester app instance
  */
-function create(configurator, options) {
-  options = options || config.harvester.options;
-  var app = harvester(options);
-  configurator(app);
-  /**
-   * Return promise instead of app in case in future we need to do any synchronizations or other async stuff before passing the app.
-   * This would be also very good for Mocha's beforeEach expectation of promise.
-   */
-  return new Promise(function (resolve) {
-    resolve(app);
-  }).then(function () {
-        console.log("--------------------");
-        console.log("Running tests:");
-        return app;
-      });
-}
-
-module.exports = {
-  create: create,
-  /**
-   * Creates instance of harvester app with default routes.
-   *
-   * This function can be safely passed to before or beforeEach as it will attempt install app and config into mocha's context
-   *
-   * @returns {*} promise resolving to harvester app instance
-   */
-  createDefault: function () {
-    var that = this;
-    return create(configureDefaultApp).then(function (app) {
-      that.app = app;
-      that.config = config;
-      return app;
-    });
-  }
+module.exports = function () {
+  var app = harvester(config.harvester.options);
+  configureApp(app);
+  app.listen(config.harvester.port);
+  this.app = app;
+  this.config = config;
+  return app;
 };
