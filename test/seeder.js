@@ -11,105 +11,68 @@ var fixtures = require('./fixtures');
  *
  * Sample usage:
  *
- * seed().beforeEach();
- * seed({baseUrl:'http://localhost:8011/'}).before({pets:[{name:'Toro'}]});
+ * seed().seed('pets','people').then(function(ids){});
+ * seed(harvesterInstance,'http://localhost:8001').seed('pets','people').then(function(ids){});
  *
- * @param configuration optional seeding configuration; currently baseUrl of harvester app is required;
- * @returns {{beforeEach: Function, before: Function}} configured seeding service
+ * @param harvesterInstance harvester instance that will be used to access database
+ * @param baseUrl optional harvester's base url to post fixtures to
+ * @returns {{dropCollectionsAndSeed: Function}} configured seeding service
  */
-module.exports = function (configuration) {
+module.exports = function (harvesterInstance, baseUrl) {
 
-  function postData(key, value, resolve, reject) {
-    var body = {};
-    body[key] = value;
-    request((configuration || config).baseUrl).post('/' + key).send(body).expect('Content-Type', /json/).expect(201).end(function (error, response) {
-      if (error) {
-        reject(error);
-        return;
-      }
-      var resources = JSON.parse(response.text)[key];
-      var ids = {};
-      ids[key] = [];
-      _.forEach(resources, function (resource) {
-        ids[key].push(resource.id);
-      });
-      resolve(ids);
-    });
-  }
+    baseUrl = baseUrl || 'http://localhost:' + config.harvester.port;
 
-  function cleanAndPost(collectionName, items, db) {
-    collectionName = inflect.pluralize(collectionName);//TODO check if this could be removed
-    return new Promise(function (resolve, reject) {
-      var collection = db.collections[collectionName];
-      if (collection) {
-        collection.drop(function () {
-          postData(collectionName, items, resolve, reject);
+    function postData(key, value, resolve, reject) {
+        var body = {};
+        body[key] = value;
+        request(baseUrl).post('/' + key).send(body).expect('Content-Type', /json/).expect(201).end(function (error, response) {
+            if (error) {
+                reject(error);
+                return;
+            }
+            var resources = JSON.parse(response.text)[key];
+            var ids = {};
+            ids[key] = [];
+            _.forEach(resources, function (resource) {
+                ids[key].push(resource.id);
+            });
+            resolve(ids);
         });
-      } else {
-        postData(collectionName, items, resolve, reject);
-      }
-    });
-  }
-
-  function seed(customFixture, db) {
-    var fixture = null == customFixture ? fixtures() : customFixture;
-    var keys = _.keys(fixture);
-    var promises = [];
-    _.forEach(keys, function (key) {
-      promises.push(cleanAndPost(key, fixture[key], db));
-    });
-    return Promise.all(promises).then(function (result) {
-      var response = {};
-      _.forEach(result, function (item) {
-        _.extend(response, item);
-      });
-      return response;
-    });
-  }
-
-  function installHook(oneOfBefores, fixture, timeout, afterSeed) {
-    var idsHolder = {};
-    oneOfBefores(function () {
-      var that = this;
-      this.timeout(timeout || 50000);
-      return seed(fixture, this.app.adapter.db).then(function (result) {
-        idsHolder.ids = result;
-        if (afterSeed instanceof Function) {
-          return afterSeed.call(that, result);
-        } else {
-          return null;
-        }
-      });
-    });
-    return idsHolder;
-  }
-
-  return {
-    /**
-     * Installs hook to seed fixture before each test.
-     *
-     * Requires harvester to be present in context under `app` property.
-     *
-     * @param fixture fixture object to be seeded i.e. {pets:[]}; if null, default fixture is used
-     * @param timeout timeout to use; optional
-     * @param afterSeed optional function to be called after seeding; it will be invoked in the same context as beforeEach
-     * @returns object holding id's of seeded items i.e. {pets:[1,2,3],people:[3,5,6]}
-     */
-    beforeEach: function (fixture, timeout, afterSeed) {
-      return installHook(beforeEach, fixture, timeout, afterSeed);
-    },
-    /**
-     * Installs hook to seed fixture before all tests in surrounding suite.
-     *
-     * Requires harvester to be present in context under `app` property.
-     *
-     * @param fixture fixture object to be seeded i.e. {pets:[]}; if null, default fixture is used
-     * @param timeout timeout to use; optional
-     * @param afterSeed optional function to be called after seeding; it will be invoked in the same context as beforeEach
-     * @returns object holding id's of seeded items i.e. {pets:[1,2,3],people:[3,5,6]}
-     */
-    before: function (fixture, timeout, afterSeed) {
-      return installHook(before, fixture, timeout, afterSeed);
     }
-  }
-};
+
+    function cleanAndPost(collectionName, items) {
+        return new Promise(function (resolve, reject) {
+            var collection = harvesterInstance.adapter.db.collections[collectionName];
+            if (collection) {
+                collection.drop(function () {
+                    postData(collectionName, items, resolve, reject);
+                });
+            } else {
+                postData(collectionName, items, resolve, reject);
+            }
+        });
+    }
+
+    function dropCollectionsAndSeed() {
+        var allFixtures = fixtures();
+        var collectionNames = 0 === arguments.length ? _.keys(allFixtures) : arguments;
+        var promises = _.map(collectionNames, function (collectionName) {
+            return cleanAndPost(collectionName, allFixtures[collectionName]);
+        });
+        return Promise.all(promises).then(function (result) {
+            var response = {};
+            _.forEach(result, function (item) {
+                _.extend(response, item);
+            });
+            return response;
+        });
+    }
+
+    if (null == harvesterInstance) {
+        throw new Error('Harvester instance is required param');
+    }
+
+    return {
+        dropCollectionsAndSeed: dropCollectionsAndSeed
+    }
+}
