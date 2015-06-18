@@ -19,10 +19,11 @@
     "url": "https://github.com/agco/harvesterjs"
   },
   "scripts": {
-    "test": "node test/runner mongodb://127.0.0.1:27017/ mongodb://127.0.0.1/local"
+    "test": "mocha"
   },
   "main": "./lib/harvester.js",
   "dependencies": {
+    "bluebird": "^2.9.30",
     "body-parser": "~1.4.3",
     "debug": "^2.1.1",
     "express": "~4.6.1",

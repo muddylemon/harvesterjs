@@ -1,20 +1,18 @@
-var harvester = require('../../lib/harvester');
+var harvester = require('../lib/harvester');
 var JSONAPI_Error = harvester.JSONAPI_Error;
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
+var config = require('./config.js');
 
-function createApp(options) {
-
-    var harvesterApp = harvester(options)
-
-        .resource('person', {
-            name: String,
-            appearances: Number,
-            pets: ['pet'],
-            soulmate: {ref: 'person', inverse: 'soulmate'},
-            lovers: [
-                {ref: 'person', inverse: 'lovers'}
-            ]
-        })
+function configureApp(app) {
+    app.resource('person', {
+        name: String,
+        appearances: Number,
+        pets: ['pet'],
+        soulmate: {ref: 'person', inverse: 'soulmate'},
+        lovers: [
+            {ref: 'person', inverse: 'lovers'}
+        ]
+    })
 
         .resource('vehicle', {
             name: String,
@@ -37,13 +35,12 @@ function createApp(options) {
             foo: String
         })
 
-        .before(
-        function (req, res) {
+        .before(function (req, res) {
             var foobar = this;
 
             if (foobar.foo && foobar.foo === 'bar') {
                 // promise
-                return new RSVP.Promise(function (resolve, reject) {
+                return new Promise(function (resolve, reject) {
                     reject(new JSONAPI_Error({
                         status: 400,
                         detail: 'Foo was bar'
@@ -55,24 +52,37 @@ function createApp(options) {
                     status: 400,
                     detail: 'Foo was baz'
                 });
-            }
-            else {
+            } else {
                 return foobar;
             }
-        }
-    );
+        });
 
 
-    harvesterApp.router.get('/random-error', function (req, res, next) {
+    app.router.get('/random-error', function (req, res, next) {
         next(new Error('this is an error'));
     });
 
-    harvesterApp.router.get('/json-errors-error', function (req, res, next) {
+    app.router.get('/json-errors-error', function (req, res, next) {
         next(new JSONAPI_Error({status: 400, detail: 'Bar was not foo'}));
     });
 
-
-    return harvesterApp;
+    return app;
 }
 
-module.exports = createApp;
+/**
+ * Creates instance of harvester app with default routes.
+ *
+ * This function can be safely passed to before or beforeEach as it will attempt install app and config into mocha's context
+ *
+ * beforeEach(require('./app.js'));
+ *
+ * @returns {*} promise resolving to harvester app instance
+ */
+module.exports = function () {
+    var app = harvester(config.harvester.options);
+    configureApp(app);
+    app.listen(config.harvester.port);
+    this.harvesterApp = app;
+    this.config = config;
+    return app;
+};
