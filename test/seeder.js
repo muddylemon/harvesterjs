@@ -87,7 +87,13 @@ module.exports = function (harvesterInstance, baseUrl) {
                 });
                 return response;
             });
+    }
 
+    function seedCustomFixture(fixture) {
+        var promises = _.map(fixture, function (items, collectionName) {
+            return post(collectionName, items);
+        });
+        return Promise.all(promises)
     }
 
     if (null == harvesterInstance) {
@@ -96,6 +102,7 @@ module.exports = function (harvesterInstance, baseUrl) {
 
     return {
         dropCollections: dropCollections,
-        dropCollectionsAndSeed: dropCollectionsAndSeed
+        dropCollectionsAndSeed: dropCollectionsAndSeed,
+        seedCustomFixture: seedCustomFixture
     }
-}
+};
