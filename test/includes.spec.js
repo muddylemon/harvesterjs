@@ -40,7 +40,7 @@ describe("includes", function () {
 
     beforeEach(function () {
         config = this.config;
-        return seeder(this.app).dropCollectionsAndSeed().then(setupLinks);
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets').then(setupLinks);
     });
 
     describe("many to many", function () {

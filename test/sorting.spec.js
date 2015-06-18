@@ -11,7 +11,7 @@ describe('sorting', function () {
     var config;
     beforeEach(function () {
         config = this.config;
-        return seeder(this.app).dropCollectionsAndSeed();
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets');
     });
 
     it('should be possible to sort by name', function (done) {

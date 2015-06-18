@@ -12,7 +12,7 @@ describe('limits', function () {
     var config;
     beforeEach(function () {
         config = this.config;
-        return seeder(this.app).dropCollectionsAndSeed();
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets');
     });
 
     describe('limits', function () {

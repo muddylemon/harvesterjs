@@ -12,7 +12,7 @@ describe('jsonapi error handling', function () {
     var config;
     beforeEach(function () {
         config = this.config;
-        return seeder(this.app).dropCollectionsAndSeed()
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets');
     });
 
     describe('raise a JSONAPI_Error error in foobar before callback', function () {

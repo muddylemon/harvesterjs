@@ -11,20 +11,16 @@ var seeder = require('./seeder.js');
 describe('Custom harvester demo', function () {
     var baseUrl = 'http://localhost:8001';
     before(function () {
-        function customAppConfigurator(app) {
-            app.resource('pets', {
-                name: String
-            });
-        }
-
         var app = harvester(config.harvester.options);
-        customAppConfigurator(app);
+        app.resource('pets', {
+            name: String
+        });
         app.listen(8001);
-        this.app = app;
+        this.harvesterApp = app;
     });
 
     beforeEach(function () {
-        return seeder(this.app).dropCollectionsAndSeed('pets')
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('pets')
     });
 
 

@@ -12,7 +12,7 @@ describe('paging', function () {
     var config;
     beforeEach(function () {
         config = this.config;
-        return seeder(this.app).dropCollectionsAndSeed();
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets');
     });
 
     it('should be possible to get page 1', function (done) {

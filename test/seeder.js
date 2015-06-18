@@ -22,50 +22,72 @@ module.exports = function (harvesterInstance, baseUrl) {
 
     baseUrl = baseUrl || 'http://localhost:' + config.harvester.port;
 
-    function postData(key, value, resolve, reject) {
-        var body = {};
-        body[key] = value;
-        request(baseUrl).post('/' + key).send(body).expect('Content-Type', /json/).expect(201).end(function (error, response) {
-            if (error) {
-                reject(error);
-                return;
-            }
-            var resources = JSON.parse(response.text)[key];
-            var ids = {};
-            ids[key] = [];
-            _.forEach(resources, function (resource) {
-                ids[key].push(resource.id);
+    function post(key, value) {
+        return new Promise(function (resolve, reject) {
+            var body = {};
+            body[key] = value;
+            request(baseUrl).post('/' + key).send(body).expect('Content-Type', /json/).expect(201).end(function (error, response) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                var resources = JSON.parse(response.text)[key];
+                var ids = {};
+                ids[key] = [];
+                _.forEach(resources, function (resource) {
+                    ids[key].push(resource.id);
+                });
+                resolve(ids);
             });
-            resolve(ids);
         });
     }
 
-    function cleanAndPost(collectionName, items) {
+    function drop(collectionName) {
         return new Promise(function (resolve, reject) {
             var collection = harvesterInstance.adapter.db.collections[collectionName];
             if (collection) {
                 collection.drop(function () {
-                    postData(collectionName, items, resolve, reject);
+                    resolve();
                 });
             } else {
-                postData(collectionName, items, resolve, reject);
+                resolve();
             }
         });
     }
 
-    function dropCollectionsAndSeed() {
-        var allFixtures = fixtures();
-        var collectionNames = 0 === arguments.length ? _.keys(allFixtures) : arguments;
+    /**
+     * Drop collections whose names are specified in vararg manner.
+     *
+     * @returns {*} array of collection names
+     */
+    function dropCollections() {
+        if (0 === arguments.length) {
+            throw new Error('Collection names must be specified explicitly');
+        }
+        var collectionNames = 0 === arguments.length ? _.keys(fixtures()) : arguments;
         var promises = _.map(collectionNames, function (collectionName) {
-            return cleanAndPost(collectionName, allFixtures[collectionName]);
+            return drop(collectionName);
         });
-        return Promise.all(promises).then(function (result) {
-            var response = {};
-            _.forEach(result, function (item) {
-                _.extend(response, item);
+        return Promise.all(promises).then(function () {
+            return collectionNames;
+        });
+    }
+
+    function dropCollectionsAndSeed() {
+        return dropCollections.apply(this, arguments).then(function (collectionNames) {
+            var allFixtures = fixtures();
+            var promises = _.map(collectionNames, function (collectionName) {
+                return post(collectionName, allFixtures[collectionName]);
             });
-            return response;
-        });
+            return Promise.all(promises)
+        }).then(function (result) {
+                var response = {};
+                _.forEach(result, function (item) {
+                    _.extend(response, item);
+                });
+                return response;
+            });
+
     }
 
     if (null == harvesterInstance) {
@@ -73,6 +95,7 @@ module.exports = function (harvesterInstance, baseUrl) {
     }
 
     return {
+        dropCollections: dropCollections,
         dropCollectionsAndSeed: dropCollectionsAndSeed
     }
 }
