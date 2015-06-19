@@ -6,7 +6,7 @@ var seeder = require('./seeder.js');
 
 describe("deletes", function () {
 
-    var config;
+    var config, ids;
     beforeEach(function () {
         config = this.config;
         return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets').then(function (_ids) {
