@@ -4,36 +4,38 @@ var should = require('should');
 var _ = require('lodash');
 var Promise = require("bluebird");
 var request = require('supertest');
-var harvester = require('../../lib/harvester');
+var harvester = require('../lib/harvester');
+
+// todo we need a better strategy to stand up test harvesterjs instances
+// listening on hard coded free ports and duplicating harvesterjs options is not very robust and DRY
+
+var harvesterOptions = {
+    adapter: 'mongodb',
+    connectionString: 'mongodb://127.0.0.1:27017/testDB',
+    db: 'testDB',
+    inflect: true,
+    oplogConnectionString: 'mongodb://127.0.0.1:27017/local?slaveOk=true'
+};
 
 describe('remote link', function () {
 
     describe('given 2 resources : \'posts\', \'people\' ; defined on distinct harvesterjs servers ' +
         'and posts has a remote link \'author\' defined to people', function () {
 
-        var app1BaseUrl = 'http://localhost:8003';
-        var app2BaseUrl = 'http://localhost:8004';
+        var app1BaseUrl = 'http://localhost:8005';
+        var app2BaseUrl = 'http://localhost:8006';
 
         before(function () {
 
             var that = this;
             that.timeout(100000);
 
-            // todo we need a better strategy to stand up test harvesterjs instances
-            // listening on hard coded free ports and duplicating harvesterjs options is not very robust and DRY
-            var options = {
-                adapter: 'mongodb',
-                connectionString: process.env.MONGODB_URL || process.argv[2] || "mongodb://127.0.0.1:27017/testDB",
-                db: 'testDB',
-                inflect: true,
-                oplogConnectionString: (process.env.OPLOG_MONGODB_URL || process.argv[3] || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
-            };
 
             that.harvesterApp1 =
-                harvester(options)
+                harvester(harvesterOptions)
                     .resource('post', {
                         title: String,
-                        author: {ref: 'person', baseUri: 'http://localhost:8004'},
+                        author: {ref: 'person', baseUri: 'http://localhost:8006'},
                         comments: ['comment'],
                         topic: 'topic'
                     })
@@ -43,10 +45,10 @@ describe('remote link', function () {
                     .resource('comment', {
                         body: String
                     })
-                    .listen(8003);
+                    .listen(8005);
 
             that.harvesterApp2 =
-                harvester(options)
+                harvester(harvesterOptions)
                     .resource('person', {
                         firstName: String,
                         lastName: String,
@@ -55,7 +57,7 @@ describe('remote link', function () {
                     .resource('country', {
                         code: String
                     })
-                    .listen(8004);
+                    .listen(8006);
 
             // todo move into utility class or upgrade to latest version of mongoose which returns a promise
             function removeCollection(model) {
