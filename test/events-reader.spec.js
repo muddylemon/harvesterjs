@@ -8,13 +8,13 @@ var BSON = require('mongodb').BSONPure;
 
 //require('longjohn');
 
-var harvesterPort = 8003
+var harvesterPort = 8003;
 var baseUrl = 'http://localhost:' + harvesterPort;
 var reportAPI_baseUri = 'http://localhost:9988';
 
 var nock = require('nock');
-
 var chai = require('chai');
+var util = require('./util');
 
 var chaiHttp = require('chai-http');
 chai.use(chaiHttp);
@@ -34,15 +34,7 @@ var harvester = require('../lib/harvester');
 var createReportPromise;
 var createReportResponseDfd;
 
-// todo checkpoints, todo check skipping
-
-var harvesterOptions = {
-    adapter: 'mongodb',
-    connectionString: 'mongodb://127.0.0.1:27017/test',
-    db: 'test',
-    inflect: true,
-    oplogConnectionString: 'mongodb://127.0.0.1:27017/local?slaveOk=true'
-};
+var harvesterOptions = util.generateCustomHarvesterOptions("testDB");
 
 describe('onChange callback, event capture and at-least-once delivery semantics', function () {
 
@@ -153,7 +145,7 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
                 that.timeout(100000);
 
                 that.eventsReader.skip = function (dfd, doc) {
-                    if (doc.ns === 'test.posts') {
+                    if (doc.ns === 'testDB.posts') {
                         dfd.resolve();
                         done();
                     }

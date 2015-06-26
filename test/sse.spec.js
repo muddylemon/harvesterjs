@@ -7,6 +7,7 @@ var ess = require('event-source-stream');
 var _ = require('lodash');
 var config = require('./config.js');
 var seeder = require('./seeder.js');
+var util = require('./util.js');
 
 describe('EventSource implementation for resource changes', function () {
 
@@ -14,16 +15,9 @@ describe('EventSource implementation for resource changes', function () {
     describe('Server Sent Events', function () {
         this.timeout(100000);
         var lastEventId;
-        var lastDataId;
 
         before(function () {
-            var options = {
-                adapter: 'mongodb',
-                connectionString: config.harvester.options.connectionString,
-                db: 'test',
-                inflect: true,
-                oplogConnectionString: config.harvester.options.oplogConnectionString
-            };
+            var options = util.generateCustomHarvesterOptions("test");
 
             harvesterApp = harvester(options).resource('book', {
                 title: String,

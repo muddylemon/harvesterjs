@@ -8,54 +8,53 @@ function configureApp(app) {
         name: String,
         appearances: Number,
         pets: ['pet'],
-        soulmate: {ref: 'person', inverse: 'soulmate'},
+        soulmate: {ref: 'person'},
         lovers: [
-            {ref: 'person', inverse: 'lovers'}
+            {ref: 'person'}
+        ]
+    })
+    .resource('vehicle', {
+        name: String,
+        owners: [
+            {ref: 'person'}
         ]
     })
 
-        .resource('vehicle', {
-            name: String,
-            owners: [
-                {ref: 'person', inverse: 'owners'}
-            ]
-        })
+    .resource('pet', {
+        name: String,
+        appearances: Number,
+        owner: 'person'
+    })
 
-        .resource('pet', {
-            name: String,
-            appearances: Number,
-            owner: 'person'
-        })
+    .resource('cat', {
+        name: String
+    }, {namespace: 'animals'})
 
-        .resource('cat', {
-            name: String
-        }, {namespace: 'animals'})
+    .resource('foobar', {
+        foo: String
+    })
 
-        .resource('foobar', {
-            foo: String
-        })
+    .before(function (req, res) {
+        var foobar = this;
 
-        .before(function (req, res) {
-            var foobar = this;
-
-            if (foobar.foo && foobar.foo === 'bar') {
-                // promise
-                return new Promise(function (resolve, reject) {
-                    reject(new JSONAPI_Error({
-                        status: 400,
-                        detail: 'Foo was bar'
-                    }));
-                });
-            } else if (foobar.foo && foobar.foo === 'baz') {
-                // non-promise
-                throw new JSONAPI_Error({
+        if (foobar.foo && foobar.foo === 'bar') {
+            // promise
+            return new Promise(function (resolve, reject) {
+                reject(new JSONAPI_Error({
                     status: 400,
-                    detail: 'Foo was baz'
-                });
-            } else {
-                return foobar;
-            }
-        });
+                    detail: 'Foo was bar'
+                }));
+            });
+        } else if (foobar.foo && foobar.foo === 'baz') {
+            // non-promise
+            throw new JSONAPI_Error({
+                status: 400,
+                detail: 'Foo was baz'
+            });
+        } else {
+            return foobar;
+        }
+    });
 
 
     app.router.get('/random-error', function (req, res, next) {
