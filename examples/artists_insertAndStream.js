@@ -1,4 +1,5 @@
 var harvester = require('../lib/harvester');
+var Joi = require('joi');
 
 var dockerHostURL = process.env.DOCKER_HOST;
 var mongodbHostname;
@@ -21,18 +22,9 @@ harvester({
     oplogConnectionString: "mongodb://" + mongodbHostname + ":27017/local"
 })
     .resource('artists', {
-        name: String
+        name: Joi.string()
     })
     .listen(apiPort);
-
-
-// subscribe to the artists change events stream (SSE)
-var ess = require('event-source-stream');
-
-ess(apiHost + '/artists/changes/stream')
-    .on('data', function(data) {
-        console.log('recevied artist change event', data)
-    });
 
 
 // add some data
