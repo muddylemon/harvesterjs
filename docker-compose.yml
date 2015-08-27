@@ -31,3 +31,24 @@ msh:
   links:
     - mongo1:mongo1
   command: mongo --host mongo1
+
+cache:
+  image: ubuntu-debootstrap:14.04
+  volumes:
+    - /cache
+  command: echo
+
+web:
+  image: agco/buildstep
+  volumes_from:
+      - cache
+  volumes:
+    - .:/localrepo/
+    - ./env:/env
+  environment:
+    USE_LOCAL_REPO: true
+    PORT: 9000
+  ports:
+    - "9000"
+  links:
+    - mongo1
