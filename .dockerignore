@@ -1,0 +1,5 @@
+# Files that should not be transported into the container.
+
+.git*
+tmp/*
+README.*
