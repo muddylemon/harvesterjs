@@ -36,7 +36,7 @@ var createReportResponseDfd;
 
 var harvesterOptions = util.generateCustomHarvesterOptions("testDB");
 
-describe('onChange callback, event capture and at-least-once delivery semantics', function () {
+describe.skip('onChange callback, event capture and at-least-once delivery semantics', function () {
 
     var harvesterApp;
 
