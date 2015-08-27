@@ -6,10 +6,10 @@ module.exports = {
         port: harvesterPort,
         options: {
             adapter: 'mongodb',
-            connectionString: process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/testDB",
+            connectionString: process.env.MONGODB_URL || "mongodb://192.168.59.103:27017/testDB",
             db: process.env.MONGODB || 'testDB',
             inflect: true,
-            oplogConnectionString: (process.env.OPLOG_MONGODB_URL || "mongodb://127.0.0.1:27017/local") + '?slaveOk=true'
+            oplogConnectionString: (process.env.OPLOG_MONGODB_URL || "mongodb://192.168.59.103:27017/local")
         }
     }
 };
