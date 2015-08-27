@@ -1,31 +1,10 @@
-mongo3:
-  hostname: mongo3
-  image: mongo:2.6.4
-  entrypoint: [ "mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
-  ports:
-    - "27018:27017"
-    - "28018:28017"
-  restart: always
-
-mongo2:
-  hostname: mongo2
-  image: mongo:2.6.4
-  entrypoint: [ "mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
-  ports:
-    - "27019:27017"
-    - "28019:28017"
-  restart: always
-
 mongo1:
   hostname: mongo1
   image: mongo:2.6.4
-  entrypoint: [ "docker mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
+  entrypoint: [ "mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
   ports:
     - "27017:27017"
     - "28017:28017"
-  links:
-    - mongo2:mongo2
-    - mongo3:mongo3
   restart: always
 
 # This configures the MongoDB replicaset
@@ -33,8 +12,6 @@ mongosetup:
   image: mongo:2.6.4
   links:
     - mongo1:mongo1
-    - mongo2:mongo2
-    - mongo3:mongo3
   volumes:
     - ./scripts:/scripts
   entrypoint: [ "/scripts/setup.sh" ]
@@ -45,9 +22,12 @@ verify:
   image: mongo:2.6.4
   links:
     - mongo1:mongo1
-    - mongo2:mongo2
-    - mongo3:mongo3
   volumes:
     - ./scripts:/scripts
   entrypoint: [ "/scripts/query.sh" ]
-  
+
+msh:
+  image: mongo:2.6.4
+  links:
+    - mongo1:mongo1
+  command: mongo --host mongo1
