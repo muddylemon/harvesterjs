@@ -38,16 +38,16 @@ cache:
     - /cache
   command: echo
 
-web:
-  build: kristofsajdak/buildstep
-  volumes_from:
-      - cache
-  volumes:
-    - .:/local-app
-    - ./env:/local-env
-  environment:
-    PORT: 9000
-  ports:
-    - "9000:9000"
-  links:
-    - mongo1
+#web:
+#  build: kristofsajdak/buildstep
+#  volumes_from:
+#      - cache
+#  volumes:
+#    - .:/local-app
+#    - ./env:/local-env
+#  environment:
+#    PORT: 9000
+#  ports:
+#    - "9000:9000"
+#  links:
+#    - mongo1
