@@ -3,3 +3,6 @@
 .git*
 tmp/*
 README.*
+docker-compose.yml
+scripts
+examples

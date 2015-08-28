@@ -39,16 +39,15 @@ cache:
   command: echo
 
 web:
-  image: agco/buildstep
+  build: ../buildstep
   volumes_from:
       - cache
   volumes:
-    - .:/localrepo/
-    - ./env:/env
+    - .:/local-app
+    - ./env:/local-env
   environment:
-    USE_LOCAL_REPO: true
     PORT: 9000
   ports:
-    - "9000"
+    - "9000:9000"
   links:
     - mongo1
