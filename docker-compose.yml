@@ -39,7 +39,7 @@ cache:
   command: echo
 
 web:
-  build: ../buildstep
+  build: kristofsajdak/buildstep
   volumes_from:
       - cache
   volumes:

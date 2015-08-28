@@ -1,13 +1,19 @@
-language: node_js
-node_js:
-  - '0.10'
-before_script:
-  - mkdir testdb
-  - mongod --port 27017 --dbpath testdb --replSet rs0 --oplogSize 20 --noprealloc --fork --smallfiles --logpath mongodb.log
-  - sleep 3
-  - mongo admin --eval 'printjson(rs.initiate());'
-  - sleep 20
-script: ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+sudo: true                  # Required to install packages
+
+env:
+  global:
+    - DOCKER_VERSION=1.7.1  # Install Docker version 1.7.1
+    - DOCKER_VERSION=get.docker.com  # Install Docker using get.docker.com (may break)
+    - UML_DOCKERCOMPOSE=1   # Install docker-compose
+
+install:
+  # Install https://github.com/moul/travis-docker toolchain
+  - curl -sLo - http://j.mp/install-travis-docker | sh -xe
+
+script:
+  - ./run 'docker-compose up -d blog && docker ps && date'
+  - ./run 'docker-compose run web npm test'
+
 deploy:
   provider: npm
   email: developer@agcocorp.com
