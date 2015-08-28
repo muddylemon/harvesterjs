@@ -2,8 +2,6 @@ sudo: true                  # Required to install packages
 
 env:
   global:
-    - DOCKER_VERSION=1.7.1  # Install Docker version 1.7.1
-    - DOCKER_VERSION=get.docker.com  # Install Docker using get.docker.com (may break)
     - UML_DOCKERCOMPOSE=1   # Install docker-compose
 
 install:
