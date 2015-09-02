@@ -1,8 +1,5 @@
 node_modules/
-data/
 *.log
 .idea
 *.iml
-*.DS_Store
-.c9/
 coverage/
