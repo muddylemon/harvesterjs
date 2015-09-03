@@ -14,7 +14,6 @@ var reportAPI_baseUri = 'http://localhost:9988';
 
 var nock = require('nock');
 var chai = require('chai');
-var util = require('./util');
 
 var chaiHttp = require('chai-http');
 chai.use(chaiHttp);
@@ -34,12 +33,12 @@ var harvester = require('../lib/harvester');
 var createReportPromise;
 var createReportResponseDfd;
 
-var harvesterOptions = util.generateCustomHarvesterOptions("testDB");
+var harvesterOptions = require("./config").harvester.options;
 
 describe('onChange callback, event capture and at-least-once delivery semantics', function () {
 
-    var harvesterApp;
 
+    var harvesterApp;
     describe('Given a post on a very controversial topic, ' +
     'and a new comment is posted or updated with content which contains profanity, ' +
     'the comment is reported as abusive to another API. ', function () {
@@ -47,8 +46,8 @@ describe('onChange callback, event capture and at-least-once delivery semantics'
         before(function (done) {
 
             var that = this;
-            that.timeout(100000);
 
+            that.timeout(100000);
             harvesterApp = harvester(harvesterOptions).resource('post', {
                         title: String
                     })

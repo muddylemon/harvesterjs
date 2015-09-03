@@ -7,7 +7,8 @@ var ess = require('event-source-stream');
 var _ = require('lodash');
 var config = require('./config.js');
 var seeder = require('./seeder.js');
-var util = require('./util.js');
+
+var harvesterOptions = require("./config").harvester.options;
 
 describe('EventSource implementation for resource changes', function () {
 
@@ -17,9 +18,8 @@ describe('EventSource implementation for resource changes', function () {
         var lastEventId;
 
         before(function () {
-            var options = util.generateCustomHarvesterOptions("test");
 
-            harvesterApp = harvester(options).resource('book', {
+            harvesterApp = harvester(harvesterOptions).resource('book', {
                 title: String,
                 author: String
             });

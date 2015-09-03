@@ -51,14 +51,14 @@
     "event-source-stream": "git+https://github.com/agco/event-source-stream.git",
     "http-as-promised": "^0.1.0",
     "istanbul": "^0.3.7",
-    "mocha-lcov-reporter": "0.0.2",
     "mocha": "2.2.x",
+    "mocha-lcov-reporter": "0.0.2",
     "nock": "^0.56.0",
     "profanity-util": "0.0.2",
     "request-debug": "^0.1.1",
     "should": "~4.0.4",
-    "supertest": "~0.13.0",
-    "sleep": "^3.0.0"
+    "sleep": "^3.0.0",
+    "supertest": "~0.13.0"
   },
   "keywords": [
     "json",

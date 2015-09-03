@@ -9,13 +9,7 @@ var harvester = require('../lib/harvester');
 // todo we need a better strategy to stand up test harvesterjs instances
 // listening on hard coded free ports and duplicating harvesterjs options is not very robust and DRY
 
-var harvesterOptions = {
-    adapter: 'mongodb',
-    connectionString: 'mongodb://192.168.59.103:27017/testDB',
-    db: 'testDB',
-    inflect: true,
-    oplogConnectionString: 'mongodb://192.168.59.103:27017/local'
-};
+var harvesterOptions = require("./config").harvester.options;
 
 describe('remote link', function () {
 
@@ -29,7 +23,6 @@ describe('remote link', function () {
 
             var that = this;
             that.timeout(100000);
-
 
             that.harvesterApp1 =
                 harvester(harvesterOptions)
