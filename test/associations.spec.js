@@ -31,7 +31,10 @@ describe.only('associations', function () {
                         }
                     }
                 ];
-
+                
+                console.log(payload)
+                console.log(ids.people[0])
+                
                 request(config.baseUrl)
                     .put('/people/' + ids.people[0])
                     .send(payload)
