@@ -144,7 +144,7 @@ describe.only('associations', function () {
         });
     });
 
-    describe('many to many association', function () {x
+    describe('many to many association', function () {
 
         it('should be able to associate', function (done) {
             var payload = {};
