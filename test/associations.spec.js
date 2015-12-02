@@ -5,13 +5,15 @@ var uuid = require('node-uuid');
 var seeder = require('./seeder.js');
 
 
-describe.skip('associations', function () {
-
+describe.only('associations', function () {
+    this.timeout(10000)
     var config, ids;
     function setupDBForInterdependentTests(){
         before(function () {
             config = this.config;
-            return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets').then(function (_ids) {
+            return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets')
+            .delay(3000)
+            .then(function (_ids) {
                 ids = _ids;
             });
         });
