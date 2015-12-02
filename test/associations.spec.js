@@ -38,7 +38,7 @@ describe.only('associations', function () {
                     .end(function (error, response) {
                     should.not.exist(error);
                     var body = JSON.parse(response.text);
-                    console.log(body);
+                    console.log(body.people[0].links);
                     (body.people[0].links.pets).should.containEql(ids.pets[0]);
                     done();
                 });
@@ -144,7 +144,7 @@ describe.only('associations', function () {
         });
     });
 
-    describe('many to many association', function () {
+    describe('many to many association', function () {x
 
         it('should be able to associate', function (done) {
             var payload = {};
