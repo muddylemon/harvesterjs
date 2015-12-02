@@ -13,7 +13,9 @@ describe.only('associations', function () {
         return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets')
         .delay(3000)
         .then(function (_ids) {
+            
             ids = _ids;
+            console.log(ids)
         });
     });
 
@@ -38,7 +40,7 @@ describe.only('associations', function () {
                     .end(function (error, response) {
                     should.not.exist(error);
                     var body = JSON.parse(response.text);
-                    console.log(body.people[0].links);
+                    console.log('xxxx', body.people[0].links);
                     (body.people[0].links.pets).should.containEql(ids.pets[0]);
                     done();
                 });
