@@ -8,21 +8,16 @@ var seeder = require('./seeder.js');
 describe.only('associations', function () {
     this.timeout(10000)
     var config, ids;
-    function setupDBForInterdependentTests(){
-        before(function () {
-            config = this.config;
-            return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets')
-            .delay(3000)
-            .then(function (_ids) {
-                ids = _ids;
-            });
+    beforeEach(function () {
+        config = this.config;
+        return seeder(this.harvesterApp).dropCollectionsAndSeed('people', 'pets')
+        .delay(3000)
+        .then(function (_ids) {
+            ids = _ids;
         });
-    }
-
+    });
 
     describe('many to one association', function () {
-        setupDBForInterdependentTests();
-
         it('should be able to associate', function (done) {
 
                 var payload = {};
@@ -67,7 +62,6 @@ describe.only('associations', function () {
     });
 
     describe('one to many association', function () {
-        setupDBForInterdependentTests();
 
         it('should be able to associate', function (done) {
             var payload = {};
@@ -110,8 +104,6 @@ describe.only('associations', function () {
     });
 
     describe('one to one association', function () {
-        setupDBForInterdependentTests();
-
         it('should be able to associate', function (done) {
             var payload = {};
 
@@ -153,7 +145,6 @@ describe.only('associations', function () {
     });
 
     describe('many to many association', function () {
-        setupDBForInterdependentTests();
 
         it('should be able to associate', function (done) {
             var payload = {};
