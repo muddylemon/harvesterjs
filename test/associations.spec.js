@@ -5,7 +5,7 @@ var uuid = require('node-uuid');
 var seeder = require('./seeder.js');
 
 
-describe('associations', function () {
+describe.only('associations', function () {
 
     var config, ids;
     function setupDBForInterdependentTests(){
