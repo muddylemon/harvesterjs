@@ -13,7 +13,7 @@ before_script:
   - mkdir -p db/test
   - mongod --port 27017 --dbpath db/test --replSet rs0 --oplogSize 20 --noprealloc --fork --smallfiles --logpath mongodb.log
   - sleep 3
-  - mongo admin --eval 'printjson(db.version());' | echo
+  - mongo admin --eval 'printjson(db.version());'
   - sleep 3
   - mongo admin --eval 'printjson(rs.initiate());'
   - sleep 10
