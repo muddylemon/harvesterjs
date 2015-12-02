@@ -43,6 +43,7 @@ describe.only('associations', function () {
                     .end(function (error, response) {
                     should.not.exist(error);
                     var body = JSON.parse(response.text);
+                    console.log(body)
                     (body.people[0].links.pets).should.containEql(ids.pets[0]);
                     done();
                 });
