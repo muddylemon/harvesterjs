@@ -5,7 +5,7 @@ var uuid = require('node-uuid');
 var seeder = require('./seeder.js');
 
 
-describe.only('associations', function () {
+describe('associations', function () {
     this.timeout(10000)
     var config, ids;
     beforeEach(function () {
@@ -20,7 +20,7 @@ describe.only('associations', function () {
     });
 
     describe('many to one association', function () {
-        it('should be able to associate', function (done) {
+        it.only('should be able to associate', function (done) {
 
                 var payload = {};
 
